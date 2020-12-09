@@ -7,41 +7,82 @@ namespace AdventOfCode
 {
     internal class Program
     {
+        #region Methods
+
         private static void Main(string[] args)
         {
-            string cons = "";
+            var cons = "";
             while (cons != "q")
             {
-                var methods = typeof(Advent2020).GetMethods( BindingFlags.Public | BindingFlags.Static).ToList();
-                 for (int i = 1; i <= 24; i++)
-                //int i = DateTime.Now.Day;
-                {
-                    Stopwatch sw = Stopwatch.StartNew();
-                    var m = methods.FirstOrDefault(m => m.Name == $"Puzzle{i}Part1");
-                    if (m != null)
-                    {
-                        var answer = m.Invoke(null, null);
-                        if (answer != null) 
-                            Console.WriteLine($"{i}.1 {answer} {sw.ElapsedMilliseconds}ms");
-                    }
-                    else Console.WriteLine($"{i}.1 MISSING METHOD");
-                    m = methods.FirstOrDefault(m => m.Name == $"Puzzle{i}Part2");
-                    if (m != null) 
-                    {
-                        var answer = m.Invoke(null, null);
-                        if (answer != null)
-                            Console.WriteLine($"{i}.2 {answer} {sw.ElapsedMilliseconds}ms");
-                    }
-                    else Console.WriteLine($"{i}.2 MISSING METHOD");
+                Execute(typeof(Advent2015));
+                // Execute(typeof(Advent2016));
+                // Execute(typeof(Advent2017));
+                // Execute(typeof(Advent2018));
+                // Execute(typeof(Advent2019));
+                // Execute(typeof(Advent2020));
 
 
-                }
-                
-                cons =   Console.ReadLine();
-
+                cons = Console.ReadLine();
             }
         }
 
+        public static void Execute(Type t, bool showIncomplete = false)
+        {
+            Console.WriteLine($"=============={t.Name}===============");
+            var methods = t.GetMethods(BindingFlags.Public | BindingFlags.Static).ToList();
+            for (var i = 1; i <= 25; i++)
+                //int i = DateTime.Now.Day;
+            {
+                var sw = Stopwatch.StartNew();
+                var m = methods.FirstOrDefault(m => m.Name == $"Puzzle{i}Part1");
+                if (m != null)
+                {
+                    var answer = m.Invoke(null, null);
 
+                    switch (answer)
+                    {
+                        case int o when o != int.MaxValue:
+                            Console.WriteLine($"{i}.1 {o} {sw.ElapsedMilliseconds}ms");
+                            break;
+                        case long l when l != long.MaxValue:
+                            Console.WriteLine($"{i}.1 {l} {sw.ElapsedMilliseconds}ms");
+                            break;
+                        default:
+                            if (showIncomplete)
+                                Console.WriteLine($"{i}.1 Not done");
+                            break;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"{i}.1 MISSING METHOD");
+                }
+
+                m = methods.FirstOrDefault(m => m.Name == $"Puzzle{i}Part2");
+                if (m != null)
+                {
+                    var answer = m.Invoke(null, null);
+                    switch (answer)
+                    {
+                        case int o when o != int.MaxValue:
+                            Console.WriteLine($"{i}.2 {o} {sw.ElapsedMilliseconds}ms");
+                            break;
+                        case long l when l != long.MaxValue:
+                            Console.WriteLine($"{i}.2 {l} {sw.ElapsedMilliseconds}ms");
+                            break;
+                        default:
+                            if (showIncomplete)
+                                Console.WriteLine($"{i}.2 Not done");
+                            break;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"{i}.2 MISSING METHOD");
+                }
+            }
+        }
+
+        #endregion
     }
 }

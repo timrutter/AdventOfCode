@@ -94,7 +94,7 @@ namespace AdventOfCode
 
         public static int Puzzle1Part1()
         {
-            var arr = "Data\\Day01.txt".ReadAll<int>();
+            var arr = "Data2020\\Day01.txt".ReadAll<int>();
             //var hash = new HashSet<int>();
             // foreach (var t in arr)
             // {
@@ -103,14 +103,14 @@ namespace AdventOfCode
             //     hash.Add(t);
             // }
 
-            //return -1;
+            //return int.MaxValue;
             var (indeces, _) = arr.FindSum(2020);
             return arr[indeces[0]] * arr[indeces[1]];
         }
 
         public static int Puzzle1Part2()
         {
-            var arr = "Data\\Day01.txt".ReadAll<int>();
+            var arr = "Data2020\\Day01.txt".ReadAll<int>();
             var hash = new Dictionary<int, int>();
             for (var index = 0; index < arr.Length; index++)
             {
@@ -127,12 +127,12 @@ namespace AdventOfCode
                 }
             }
 
-            return -1;
+            return int.MaxValue;
         }
 
         public static int Puzzle2Part1()
         {
-            var kvps = "Data\\Day02.txt".ReadAllKeyValuePairs();
+            var kvps = "Data2020\\Day02.txt".ReadAllKeyValuePairs();
             var count = 0;
             foreach (var s in kvps)
             {
@@ -152,7 +152,7 @@ namespace AdventOfCode
 
         public static int Puzzle2Part2()
         {
-            var kvps = "Data\\Day02.txt".ReadAllKeyValuePairs();
+            var kvps = "Data2020\\Day02.txt".ReadAllKeyValuePairs();
             var count = 0;
             foreach (var s in kvps)
             {
@@ -174,7 +174,7 @@ namespace AdventOfCode
 
         public static int Puzzle3Part1()
         {
-            var trees = File.ReadAllLines("Data\\Day03.txt");
+            var trees = File.ReadAllLines("Data2020\\Day03.txt");
             return Puzzle3Part1Internal(trees, 3, 1);
         }
 
@@ -193,7 +193,7 @@ namespace AdventOfCode
 
         public static int Puzzle3Part2()
         {
-            var trees = File.ReadAllLines("Data\\Day03.txt");
+            var trees = File.ReadAllLines("Data2020\\Day03.txt");
             return Puzzle3Part1Internal(trees, 1, 1) *
                    Puzzle3Part1Internal(trees, 3, 1) *
                    Puzzle3Part1Internal(trees, 5, 1) *
@@ -203,7 +203,7 @@ namespace AdventOfCode
 
         public static int Puzzle4Part1()
         {
-            var passports = "Data\\Day04.txt".ReadAllBlankLineSeparatedRecords(true);
+            var passports = "Data2020\\Day04.txt".ReadAllBlankLineSeparatedRecords(true);
             var count = 0;
             var required = new[] {"byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"};
 
@@ -222,7 +222,7 @@ namespace AdventOfCode
 
         public static int Puzzle4Part2()
         {
-            var passports = "Data\\Day04.txt".ReadAllBlankLineSeparatedRecords(true);
+            var passports = "Data2020\\Day04.txt".ReadAllBlankLineSeparatedRecords(true);
             var count = 0;
             var required = new[] {"byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"};
 
@@ -295,9 +295,9 @@ namespace AdventOfCode
             return count;
         }
 
-        public static object Puzzle5Part1()
+        public static int Puzzle5Part1()
         {
-            var lines = File.ReadAllLines("Data\\Day05.txt");
+            var lines = File.ReadAllLines("Data2020\\Day05.txt");
 
             var max = int.MinValue;
             foreach (var l in lines)
@@ -328,9 +328,9 @@ namespace AdventOfCode
             return max;
         }
 
-        public static object Puzzle5Part2()
+        public static int Puzzle5Part2()
         {
-            var lines = File.ReadAllLines("Data\\Day05.txt");
+            var lines = File.ReadAllLines("Data2020\\Day05.txt");
 
             var mat = new bool [128, 8];
             foreach (var l in lines)
@@ -372,24 +372,24 @@ namespace AdventOfCode
                 found = true;
             }
 
-            return -1;
+            return int.MaxValue;
         }
 
-        public static object Puzzle6Part1()
+        public static int Puzzle6Part1()
         {
-            return "Data\\Day06.txt".ReadAllBlankLineSeparatedRecords()
+            return "Data2020\\Day06.txt".ReadAllBlankLineSeparatedRecords()
                 .Sum(q => q.RemoveAllWhiteSpace().Distinct().Count());
         }
 
-        public static object Puzzle6Part2()
+        public static int Puzzle6Part2()
         {
-            return "Data\\Day06.txt".ReadAllBlankLineSeparatedRecords().Select(l => l.SplitLines())
+            return "Data2020\\Day06.txt".ReadAllBlankLineSeparatedRecords().Select(l => l.SplitLines())
                 .Sum(s => "abcdefghijklmnopqrstuvwxyz".Count(c => s.All(s1 => s1.Contains(c))));
         }
 
-        public static object Puzzle7Part1()
+        public static int Puzzle7Part1()
         {
-            var lines = "Data\\Day07.txt".ReadAllKeyValuePairs("contain");
+            var lines = "Data2020\\Day07.txt".ReadAllKeyValuePairs("contain");
             var dict = new List<Bag>();
             foreach (var line in lines)
             {
@@ -440,9 +440,9 @@ namespace AdventOfCode
         {
             return Regex.Replace(str, " bag.*", "").Trim();
         }
-        public static object Puzzle7Part2()
+        public static int Puzzle7Part2()
         {
-            var lines = "Data\\Day07.txt".ReadAllKeyValuePairs("contain");
+            var lines = "Data2020\\Day07.txt".ReadAllKeyValuePairs("contain");
             var dict = new Dictionary<string,Bag>();
             foreach (var line in lines)
             {
@@ -480,16 +480,16 @@ namespace AdventOfCode
         }
 
 
-        public static object Puzzle8Part1()
+        public static int Puzzle8Part1()
         {
-           var kvps =  "Data\\Day08.txt".ReadAllKeyValuePairs(" ").ToList();
+           var kvps =  "Data2020\\Day08.txt".ReadAllKeyValuePairs(" ").ToList();
            return Computer.RunProgram(kvps).Item1;
         }
 
         
-        public static object Puzzle8Part2()
+        public static int Puzzle8Part2()
         {
-            var kvps =  "Data\\Day08.txt".ReadAllKeyValuePairs(" ").ToList();
+            var kvps =  "Data2020\\Day08.txt".ReadAllKeyValuePairs(" ").ToList();
             for (int i = 0; i < kvps.Count; i++)
             {
                 switch (kvps[i].key)
@@ -513,12 +513,12 @@ namespace AdventOfCode
                 }
             }
 
-            return -1;
+            return int.MaxValue;
         }
 
-        public static object Puzzle9Part1()
+        public static long Puzzle9Part1()
         {
-            var kvps =  "Data\\Day09.txt".ReadAll<long>().ToList();
+            var kvps =  "Data2020\\Day09.txt".ReadAll<long>().ToList();
             int count = 25;
             for (int i = count; i < kvps.Count; i++)
             {
@@ -527,13 +527,13 @@ namespace AdventOfCode
                     return kvps[i];
             }
 
-            return -1;
+            return int.MaxValue;
         }
 
-        public static object Puzzle9Part2()
+        public static long Puzzle9Part2()
         {
             var target = 1309761972;
-            var kvps =  "Data\\Day09.txt".ReadAll<long>().ToList();
+            var kvps =  "Data2020\\Day09.txt".ReadAll<long>().ToList();
 
             for (int i = 2; i < kvps.Count -1; i++)
             {
@@ -542,157 +542,167 @@ namespace AdventOfCode
                 return values.Min() + values.Max();
             }
 
-            return -1;
+            return int.MaxValue;
         }
 
-        public static object Puzzle10Part1()
+        public static int Puzzle10Part1()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle10Part2()
+        public static int Puzzle10Part2()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle11Part1()
+        public static int Puzzle11Part1()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle11Part2()
+        public static int Puzzle11Part2()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle12Part1()
+        public static int Puzzle12Part1()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle12Part2()
+        public static int Puzzle12Part2()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle13Part1()
+        public static int Puzzle13Part1()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle13Part2()
+        public static int Puzzle13Part2()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle14Part1()
+        public static int Puzzle14Part1()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle14Part2()
+        public static int Puzzle14Part2()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle15Part1()
+        public static int Puzzle15Part1()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle15Part2()
+        public static int Puzzle15Part2()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle16Part1()
+        public static int Puzzle16Part1()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle16Part2()
+        public static int Puzzle16Part2()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle17Part1()
+        public static int Puzzle17Part1()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle17Part2()
+        public static int Puzzle17Part2()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle18Part1()
+        public static int Puzzle18Part1()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle18Part2()
+        public static int Puzzle18Part2()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle19Part1()
+        public static int Puzzle19Part1()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle19Part2()
+        public static int Puzzle19Part2()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle20Part1()
+        public static int Puzzle20Part1()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle20Part2()
+        public static int Puzzle20Part2()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle21Part1()
+        public static int Puzzle21Part1()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle21Part2()
+        public static int Puzzle21Part2()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle22Part1()
+        public static int Puzzle22Part1()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle22Part2()
+        public static int Puzzle22Part2()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle23Part1()
+        public static int Puzzle23Part1()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle23Part2()
+        public static int Puzzle23Part2()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle24Part1()
+        public static int Puzzle24Part1()
         {
-            return null;
+           return int.MaxValue;
         }
 
-        public static object Puzzle24Part2()
+        public static int Puzzle24Part2()
         {
-            return null;
+           return int.MaxValue;
+        }
+
+        public static int Puzzle25Part1()
+        {
+           return int.MaxValue;
+        }
+
+        public static int Puzzle25Part2()
+        {
+           return int.MaxValue;
         }
 
         #endregion

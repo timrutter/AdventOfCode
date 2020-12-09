@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace AdventOfCode
@@ -122,11 +123,48 @@ namespace AdventOfCode
         #endregion
     }
 
+    public static class Characters
+    {
+        public const string LowerAlphabet = "abcdefghijklmnopqrstuvwxyz";
+        public const string UpperAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        public const string UpperAndLowerAlphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        public const string LowerVowels = "aeiou";
+        public const string UpperVowels = "AEIOU";
+        public const string UpperAndLowerVowels = "aeiouAEIOU";
+        public const string LowerConsonants = "bcdfghjklmnpqrstvwxyz";
+        public const string UpperConsonants = "BCDFGHJKLMNPQRSTVWXYZ";
+        public const string UpperAndLowerConsonants = "bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ";
+        public const string DecimalNumbers = "0123456789";
+
+        public static bool IsVowel(this char c)
+        {
+            return LowerVowels.Contains(char.ToLower(c));
+        }
+        public static bool IsConsonant(this char c)
+        {
+            return LowerConsonants.Contains(char.ToLower(c));
+        }
+
+    }
     public static class StringOperations
     {
         public static IEnumerable<string> RemoveBlankLines(this IEnumerable<string> strs)
         {
              return strs.Where(s => !string.IsNullOrWhiteSpace(s));
+        }
+
+        public static IEnumerable<T> SplitToType<T>(this string str, string separator)
+        {
+            var bits = str.Split("x");
+            return bits.Select(b => (T)Convert.ChangeType(b, typeof(T)));
+        }
+        
+        public static string ToHexString(this byte[] ba)
+        {
+            StringBuilder hex = new StringBuilder(ba.Length * 2);
+            foreach (byte b in ba)
+                hex.AppendFormat("{0:x2}", b);
+            return hex.ToString();
         }
     }
     public static class FileOperations
