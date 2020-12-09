@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
@@ -12,15 +13,16 @@ namespace AdventOfCode
             while (cons != "q")
             {
                 var methods = typeof(Advent2020).GetMethods( BindingFlags.Public | BindingFlags.Static).ToList();
-                // for (int i = 1; i <= 24; i++)
-                int i = DateTime.Now.Day;
+                 for (int i = 1; i <= 24; i++)
+                //int i = DateTime.Now.Day;
                 {
+                    Stopwatch sw = Stopwatch.StartNew();
                     var m = methods.FirstOrDefault(m => m.Name == $"Puzzle{i}Part1");
                     if (m != null)
                     {
                         var answer = m.Invoke(null, null);
                         if (answer != null) 
-                            Console.WriteLine($"{i}.1 {answer}");
+                            Console.WriteLine($"{i}.1 {answer} {sw.ElapsedMilliseconds}ms");
                     }
                     else Console.WriteLine($"{i}.1 MISSING METHOD");
                     m = methods.FirstOrDefault(m => m.Name == $"Puzzle{i}Part2");
@@ -28,7 +30,7 @@ namespace AdventOfCode
                     {
                         var answer = m.Invoke(null, null);
                         if (answer != null)
-                            Console.WriteLine($"{i}.2 {answer}");
+                            Console.WriteLine($"{i}.2 {answer} {sw.ElapsedMilliseconds}ms");
                     }
                     else Console.WriteLine($"{i}.2 MISSING METHOD");
 

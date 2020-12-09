@@ -17,13 +17,47 @@ namespace AdventOfCode
             return dict[key];
 
         }
-        public static (int index1, int index2) FindSum(this IList<int> arr, int target)
+        public static (List<int> indeces, List<int> values) FindSum(this IList<int> arr, int target, int count = 2)
         {
-            foreach (var t in arr.Combinations())
-                if (arr[t[0]] + arr[t[1]] == target)
-                    return (t[0], t[1]);
+            foreach (var t in arr.Combinations(count))
+            {
+                if (t.Sum(i => arr[i]) == target)
+                    return (t, t.Select(j => arr[j]).ToList());
+            }
 
-            return (-1, -1);
+            return (null,null);
+        }
+        public static (List<int> indeces, List<long> values) FindSum(this IList<long> arr, long target, int count = 2)
+        {
+            foreach (var t in arr.Combinations(count))
+            {
+                if (t.Sum(i => arr[i]) == target)
+                    return (t, t.Select(j => arr[j]).ToList());
+            }
+
+            return (null,null);
+        }
+        public static (List<long> values, int index1, int index2) FindContiguousSum(this IList<long> arr, long target, int count = 2)
+        {
+            for (int j = 0; j < arr.Count - count; j++)
+            {
+                var l = arr.Skip(j).Take(count).ToList();
+                if (l.Sum() == target)
+                    return (l,j,j+count);
+            }
+
+            return (null,-1,-1);
+        }
+        public static (List<int> values, int index1, int index2) FindContiguousSum(this IList<int> arr, int target, int count = 2)
+        {
+            for (int j = 0; j < arr.Count - count; j++)
+            {
+                var l = arr.Skip(j).Take(count).ToList();
+                if (l.Sum() == target)
+                    return (l,j,j+count);
+            }
+
+            return (null,-1,-1);
         }
 
         public static IEnumerable<List<int>> Combinations(this IList<int> arr, int count = 2)
@@ -46,9 +80,38 @@ namespace AdventOfCode
                 yield return inc;
         }
 
+        public static IEnumerable<List<int>> Combinations(this IList<long> arr, int count = 2)
+        {
+            var indeces = Enumerable.Range(0, count).ToList();
+
+            IEnumerable<List<int>> Increment(int index, int start)
+            {
+                if (index == count) yield break;
+                for (indeces[index] = start; indeces[index] < arr.Count; indeces[index]++)
+                {
+                    if (index == count - 1)
+                        yield return indeces.ToList();
+                    foreach (var inc in Increment(index + 1, indeces[index] + 1))
+                        yield return inc;
+                }
+            }
+
+            foreach (var inc in Increment(0, 0))
+                yield return inc;
+        }
+
         public static IEnumerable<int> Accumulate(this IEnumerable<int> arr)
         {
             var sum = 0;
+            foreach (var i in arr)
+            {
+                sum += i;
+                yield return sum;
+            }
+        }
+        public static IEnumerable<long> Accumulate(this IEnumerable<long> arr)
+        {
+            long sum = 0;
             foreach (var i in arr)
             {
                 sum += i;
@@ -87,11 +150,21 @@ namespace AdventOfCode
                 yield return (bits[0], bits[1]);
             }
         }
+        public static IEnumerable<(T1 key, T2 value)> ReadAllKeyValuePairs<T1, T2>(this string fileName,
+            string separator = ":")
+        {
+            var strings = File.ReadAllLines(fileName);
+            foreach (var s in strings)
+            {
+                var bits = s.Split(separator);
+                yield return ((T1)Convert.ChangeType(bits[0],typeof(T1)) , (T2)Convert.ChangeType(bits[1],typeof(T2)));
+            }
+        }
 
-        public static int[] ReadAllInts(this string fileName)
+        public static T[] ReadAll<T>(this string fileName)
         {
             var str = File.ReadAllLines(fileName);
-            return str.Select(int.Parse).ToArray();
+            return str.Select(s =>(T) Convert.ChangeType(s,typeof(T))).ToArray();
         }
 
         

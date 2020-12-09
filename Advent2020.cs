@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace AdventOfCode
 {
@@ -93,7 +94,7 @@ namespace AdventOfCode
 
         public static int Puzzle1Part1()
         {
-            var arr = "Data\\Day01.txt".ReadAllInts();
+            var arr = "Data\\Day01.txt".ReadAll<int>();
             //var hash = new HashSet<int>();
             // foreach (var t in arr)
             // {
@@ -103,13 +104,13 @@ namespace AdventOfCode
             // }
 
             //return -1;
-            var indexes = arr.FindSum(2020);
-            return arr[indexes.index1] * arr[indexes.index2];
+            var (indeces, _) = arr.FindSum(2020);
+            return arr[indeces[0]] * arr[indeces[1]];
         }
 
         public static int Puzzle1Part2()
         {
-            var arr = "Data\\Day01.txt".ReadAllInts();
+            var arr = "Data\\Day01.txt".ReadAll<int>();
             var hash = new Dictionary<int, int>();
             for (var index = 0; index < arr.Length; index++)
             {
@@ -398,12 +399,13 @@ namespace AdventOfCode
                 {
                     var bits = line.value.Split(",");
                     foreach (var bit in bits)
-                        list.Add((int.Parse(bit.Substring(1, 2)), bit.Substring(2).Replace(".", "").Replace("bags","").Replace("bag","").Trim()));
+                        list.Add((int.Parse(bit.Substring(1, 2)),CleanColour( bit.Substring(2))));
                 }
 
-                var b = FindBags(dict, line.key.Replace("bags","").Replace("bag","").Trim());
+                var color = CleanColour(line.key);
+                var b = FindBags(dict, color);
                 if (b.Count == 0)
-                    dict.Add(new Bag(null,line.key.Replace("bags","").Replace("bag","").Trim(), list));
+                    dict.Add(new Bag(null,CleanColour(line.key), list));
                 else
                     foreach (var bag in b)
                         bag.Children.AddRange(list.Select(l => new Bag(bag,l.Item2, null, l.Item1)));
@@ -434,6 +436,10 @@ namespace AdventOfCode
             return dict.SelectMany(d => d.FindBags(color)).Where(b => b != null).ToList();
         }
 
+        private static string CleanColour(string str)
+        {
+            return Regex.Replace(str, " bag.*", "").Trim();
+        }
         public static object Puzzle7Part2()
         {
             var lines = "Data\\Day07.txt".ReadAllKeyValuePairs("contain");
@@ -446,20 +452,12 @@ namespace AdventOfCode
                 {
                     var bits = line.value.Split(",");
                     foreach (var bit in bits)
-                        list.Add((int.Parse(bit.Substring(1, 2)), bit.Substring(2).Replace(".", "").Replace("bags","").Replace("bag","").Trim()));
+                        list.Add((int.Parse(bit.Substring(1, 2)), CleanColour( bit.Substring(2))));
                 }
 
-                var bagName = line.key.Replace("bags", "").Replace("bag", "").Trim();
-                Bag bag = null;
-                if (!dict.ContainsKey(bagName))
-                {
-                    bag = new Bag(null, bagName, null);
-                    dict.Add(bagName,bag);
-                }
-                else
-                {
-                     bag = dict[bagName];
-                }
+                var bagName = CleanColour(line.key);
+                Bag bag = dict.GetOrAdd(bagName,() => new Bag(null, bagName, null));
+               
                 foreach (var l in list)
                 {
                     Bag childBag;
@@ -485,36 +483,10 @@ namespace AdventOfCode
         public static object Puzzle8Part1()
         {
            var kvps =  "Data\\Day08.txt".ReadAllKeyValuePairs(" ").ToList();
-           return RunProgram(kvps).Item1;
+           return Computer.RunProgram(kvps).Item1;
         }
 
-        public static (int acc, bool terminated) RunProgram(List<(string key, string value)> kvps)
-        {
-            var acc = 0;
-            var ind = 0;
-            var visited = new HashSet<int>();
-            while (true)
-            {
-                if (ind >= kvps.Count) return (acc, true);
-                if (visited.Contains(ind))
-                    return (acc,false);
-                visited.Add(ind);
-                switch (kvps[ind].key)
-                {
-                    case "acc":
-                        acc += int.Parse(kvps[ind].value);
-                        ind++;
-                        break;
-                    case "jmp":
-                        ind += int.Parse(kvps[ind].value);
-                        break;
-                    case "nop":
-                        ind++;
-                        break;
-                }
-
-            }
-        }
+        
         public static object Puzzle8Part2()
         {
             var kvps =  "Data\\Day08.txt".ReadAllKeyValuePairs(" ").ToList();
@@ -525,16 +497,16 @@ namespace AdventOfCode
                     case "jmp":
                     {
                         kvps[i] = ("nop", kvps[i].value);
-                        var (acc, terminated) = RunProgram(kvps);
-                        if (terminated) return acc;
+                        var (acc, err) = Computer.RunProgram(kvps);
+                        if (err == 0) return acc;
                         kvps[i] = ("jmp", kvps[i].value);
                         break;
                     }
                     case "nop":
                     {
                         kvps[i] = ("jmp", kvps[i].value);
-                        var (acc, terminated) = RunProgram(kvps);
-                        if (terminated) return acc;
+                        var (acc, err) = Computer.RunProgram(kvps);
+                        if (err == 0) return acc;
                         kvps[i] = ("nop", kvps[i].value);
                         break;
                     }
@@ -546,12 +518,31 @@ namespace AdventOfCode
 
         public static object Puzzle9Part1()
         {
-            return null;
+            var kvps =  "Data\\Day09.txt".ReadAll<long>().ToList();
+            int count = 25;
+            for (int i = count; i < kvps.Count; i++)
+            {
+                var (indeces, _) = kvps.Skip( i -count).Take(count).ToList().FindSum(kvps[i]);
+                if (indeces  == null)
+                    return kvps[i];
+            }
+
+            return -1;
         }
 
         public static object Puzzle9Part2()
         {
-            return null;
+            var target = 1309761972;
+            var kvps =  "Data\\Day09.txt".ReadAll<long>().ToList();
+
+            for (int i = 2; i < kvps.Count -1; i++)
+            {
+                var (values, _, _) = kvps.FindContiguousSum(target,i);
+                if (values == null) continue;
+                return values.Min() + values.Max();
+            }
+
+            return -1;
         }
 
         public static object Puzzle10Part1()
@@ -705,5 +696,37 @@ namespace AdventOfCode
         }
 
         #endregion
+    }
+
+    public static class Computer
+    {
+        public const int InfiniteLoopDetected = 1;
+        public static (int acc, int err) RunProgram(List<(string key, string value)> kvps)
+        {
+            var acc = 0;
+            var ind = 0;
+            var visited = new HashSet<int>();
+            while (true)
+            {
+                if (ind >= kvps.Count) return (acc, 0);
+                if (visited.Contains(ind))
+                    return (acc,InfiniteLoopDetected);
+                visited.Add(ind);
+                switch (kvps[ind].key)
+                {
+                    case "acc":
+                        acc += int.Parse( kvps[ind].value);
+                        ind++;
+                        break;
+                    case "jmp":
+                        ind +=  int.Parse(kvps[ind].value);
+                        break;
+                    case "nop":
+                        ind++;
+                        break;
+                }
+
+            }
+        }
     }
 }
