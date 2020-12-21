@@ -2,6 +2,9 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using AdventOfCode.Year2015;
+using AdventOfCode.Year2019;
+using AdventOfCode.Year2020;
 
 namespace AdventOfCode
 {
@@ -14,12 +17,12 @@ namespace AdventOfCode
             var cons = "";
             while (cons != "q")
             {
-                Execute(typeof(Advent2015));
+                //Execute(typeof(Advent2015));
                 // Execute(typeof(Advent2016));
                 // Execute(typeof(Advent2017));
                 // Execute(typeof(Advent2018));
-                // Execute(typeof(Advent2019));
-                // Execute(typeof(Advent2020));
+                 //Execute(typeof(Advent2019));
+                 Execute(typeof(Advent2020));
 
 
                 cons = Console.ReadLine();
@@ -30,8 +33,9 @@ namespace AdventOfCode
         {
             Console.WriteLine($"=============={t.Name}===============");
             var methods = t.GetMethods(BindingFlags.Public | BindingFlags.Static).ToList();
-            for (var i = 1; i <= 25; i++)
-                //int i = DateTime.Now.Day;
+            //for (var i = 1; i <= 25; i++)
+            for (var i = 20; i <= 20; i++)
+            //    int i = DateTime.Now.Day;
             {
                 var sw = Stopwatch.StartNew();
                 var m = methods.FirstOrDefault(m => m.Name == $"Puzzle{i}Part1");
@@ -41,11 +45,17 @@ namespace AdventOfCode
 
                     switch (answer)
                     {
-                        case int o when o != int.MaxValue:
-                            Console.WriteLine($"{i}.1 {o} {sw.ElapsedMilliseconds}ms");
+                        case int l when l != int.MaxValue:
+                            Console.WriteLine($"{i}.1 {l} {sw.ElapsedMilliseconds}ms");
                             break;
                         case long l when l != long.MaxValue:
                             Console.WriteLine($"{i}.1 {l} {sw.ElapsedMilliseconds}ms");
+                            break;
+                        case ushort l when l != ushort.MaxValue:
+                            Console.WriteLine($"{i}.1 {l} {sw.ElapsedMilliseconds}ms");
+                            break;
+                        case string s:
+                            Console.WriteLine($"{i}.1 {s} {sw.ElapsedMilliseconds}ms");
                             break;
                         default:
                             if (showIncomplete)
@@ -69,6 +79,9 @@ namespace AdventOfCode
                             break;
                         case long l when l != long.MaxValue:
                             Console.WriteLine($"{i}.2 {l} {sw.ElapsedMilliseconds}ms");
+                            break;
+                        case string s:
+                            Console.WriteLine($"{i}.1 {s} {sw.ElapsedMilliseconds}ms");
                             break;
                         default:
                             if (showIncomplete)
