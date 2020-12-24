@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection.Metadata;
-using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using AdventOfCode.Functions;
+// ReSharper disable UnusedMember.Global
 
 namespace AdventOfCode.Year2020
 {
@@ -400,7 +398,7 @@ namespace AdventOfCode.Year2020
 
             var hashset = new HashSet<string>();
             GetAllParents(hashset, dict, "shiny gold");
-            return hashset.Count();
+            return hashset.Count;
         }
 
         private static void GetAllParents(HashSet<string> hashset, List<Bag> dict, string name)
@@ -534,7 +532,7 @@ namespace AdventOfCode.Year2020
             var kvps = "Year2020\\Data\\Day10.txt".ReadAll<int>().ToList();
             kvps.Insert(0, 0);
             kvps.Sort();
-            kvps.Add(kvps[kvps.Count - 1] + 3);
+            kvps.Add(kvps[^1] + 3);
 
             var list = new List<int>();
             for (var i = 1; i < kvps.Count; i++) list.Add(kvps[i] - kvps[i - 1]);
@@ -822,7 +820,7 @@ namespace AdventOfCode.Year2020
         {
             var lines = "Year2020\\Data\\Day13.txt".ReadAll<string>();
             var startTime = int.Parse(lines[0]);
-            var buses = lines[1].Split(",").Where(b => b != "x").Select(b => int.Parse(b)).ToList();
+            var buses = lines[1].Split(",").Where(b => b != "x").Select(int.Parse).ToList();
             var list = new List<(int id, int arrivalTime)>();
             foreach (var bus in buses)
             {
@@ -834,8 +832,8 @@ namespace AdventOfCode.Year2020
 
 
             var min = list.Min(l => l.arrivalTime);
-            var m = list.FirstOrDefault(m => m.arrivalTime == min);
-            return (m.arrivalTime - startTime) * m.id;
+            var (id, arrivalTime) = list.FirstOrDefault(m1 => m1.arrivalTime == min);
+            return (arrivalTime - startTime) * id;
         }
 
         public static long Puzzle13Part2()
@@ -1120,38 +1118,38 @@ namespace AdventOfCode.Year2020
         }
 
 
-        private static void Dump(HashSet<(int x, int y, int z)> array)
-        {
-            for (var z = array.Min(t => t.z); z <= array.Max(t => t.z); z++)
-            {
-                Console.WriteLine($"z = {z}");
-                for (var y = array.Min(t => t.y); y <= array.Max(t => t.y); y++)
-                {
-                    for (var x = array.Min(t => t.x); x <= array.Max(t => t.x); x++)
-                        Console.Write(array.Contains((x, y, z)) ? '#' : '.');
-                    Console.WriteLine();
-                }
+        // private static void Dump(HashSet<(int x, int y, int z)> array)
+        // {
+        //     for (var z = array.Min(t => t.z); z <= array.Max(t => t.z); z++)
+        //     {
+        //         Console.WriteLine($"z = {z}");
+        //         for (var y = array.Min(t => t.y); y <= array.Max(t => t.y); y++)
+        //         {
+        //             for (var x = array.Min(t => t.x); x <= array.Max(t => t.x); x++)
+        //                 Console.Write(array.Contains((x, y, z)) ? '#' : '.');
+        //             Console.WriteLine();
+        //         }
+        //
+        //         Console.WriteLine();
+        //     }
+        // }
 
-                Console.WriteLine();
-            }
-        }
-
-        private static void Dump2(HashSet<(int x, int y, int z, int w)> array)
-        {
-            for (var w = array.Min(t => t.w); w <= array.Max(t => t.w); w++)
-            for (var z = array.Min(t => t.z); z <= array.Max(t => t.z); z++)
-            {
-                Console.WriteLine($"z = {z}, w={w}");
-                for (var y = array.Min(t => t.y); y <= array.Max(t => t.y); y++)
-                {
-                    for (var x = array.Min(t => t.x); x <= array.Max(t => t.x); x++)
-                        Console.Write(array.Contains((x, y, z, w)) ? '#' : '.');
-                    Console.WriteLine();
-                }
-
-                Console.WriteLine();
-            }
-        }
+        // private static void Dump2(HashSet<(int x, int y, int z, int w)> array)
+        // {
+        //     for (var w = array.Min(t => t.w); w <= array.Max(t => t.w); w++)
+        //     for (var z = array.Min(t => t.z); z <= array.Max(t => t.z); z++)
+        //     {
+        //         Console.WriteLine($"z = {z}, w={w}");
+        //         for (var y = array.Min(t => t.y); y <= array.Max(t => t.y); y++)
+        //         {
+        //             for (var x = array.Min(t => t.x); x <= array.Max(t => t.x); x++)
+        //                 Console.Write(array.Contains((x, y, z, w)) ? '#' : '.');
+        //             Console.WriteLine();
+        //         }
+        //
+        //         Console.WriteLine();
+        //     }
+        // }
 
 
         public static int Puzzle17Part2()
@@ -1210,7 +1208,7 @@ namespace AdventOfCode.Year2020
             long ret = 0;
             int i;
 
-            long Evaluate(string s)
+            long DoEvaluate(string s)
             {
                 long total = 0;
                 var add = -1;
@@ -1242,15 +1240,15 @@ namespace AdventOfCode.Year2020
                         {
                             case -1:
                                 i++;
-                                total = Evaluate(s);
+                                total = DoEvaluate(s);
                                 break;
                             case 0:
                                 i++;
-                                total += Evaluate(s);
+                                total += DoEvaluate(s);
                                 break;
                             case 1:
                                 i++;
-                                total *= Evaluate(s);
+                                total *= DoEvaluate(s);
                                 break;
                         }
                     }
@@ -1266,7 +1264,7 @@ namespace AdventOfCode.Year2020
             foreach (var s in sums)
             {
                 i = 0;
-                var t = Evaluate(s);
+                var t = DoEvaluate(s);
                 //Console.WriteLine(t);
                 ret += t;
             }
@@ -1304,19 +1302,21 @@ namespace AdventOfCode.Year2020
 
         private static List<string> Evaluate(int rule, IReadOnlyDictionary<int, string> rules)
         {
-            var r = rules[rule];
-            if (r.StartsWith("\""))
-                return new List<string> {$"{r.RemoveQuotes()}"};
-            return r.Split('|').SelectMany(bit => bit.Trim()
-                    .SplitToType<int>(" ")
-                    .Select(i => Evaluate(i, rules))
-                    .Aggregate(new List<string>(),
-                        (current, l) => current.Count == 0 ? l : Append(current.ToList(), l)))
-                .ToList();
+            // var r = rules[rule];
+            // if (r.StartsWith("\""))
+            //     return new List<string> {$"{r.RemoveQuotes()}"};
+            // return r.Split('|').SelectMany(bit => bit.Trim()
+            //         .SplitToType<int>(" ")
+            //         .Select(i => Evaluate(i, rules))
+            //         .Aggregate(new List<string>(),
+            //             (current, l) => current.Count == 0 ? l : Append(current.ToList(), l)))
+            //     .ToList();
+            return null;
         }
 
         public static int Puzzle19Part1()
         {
+            return -1;
             var rules = "Year2020\\Data\\Day19.txt".ReadAllKeyValuePairs<int, string>(": ")
                 .ToDictionary(d => d.key, d => d.value);
             var strings = "Year2020\\Data\\Day19a.txt".ReadAll<string>().ToList();
@@ -1331,6 +1331,7 @@ namespace AdventOfCode.Year2020
 
         public static int Puzzle19Part2()
         {
+            return -1;
             var rules = "Year2020\\Data\\Day19.txt".ReadAllKeyValuePairs<int, string>(": ")
                 .ToDictionary(d => d.key, d => d.value);
             var strings = "Year2020\\Data\\Day19a.txt".ReadAll<string>().ToList();
@@ -1375,7 +1376,7 @@ namespace AdventOfCode.Year2020
             });
         }
 
-        public static Dictionary<string, Board> Puzzle20LoadData()
+        private static Dictionary<string, Board> Puzzle20LoadData()
         {
             var strings = "Year2020\\Data\\Day20.txt".ReadAll<string>();
             var dict = new Dictionary<string, Board>();
@@ -1391,11 +1392,10 @@ namespace AdventOfCode.Year2020
 
             return dict;
         }
-        public static List<Board> GetAllBoards(Board b)
+
+        private static List<Board> GetAllBoards(Board b)
         {
-            var ret = new List<Board>();
-            ret.Add(b);
-            ret.Add(b.RotateACW());
+            var ret = new List<Board> {b, b.RotateACW()};
             ret.Add(ret[1].RotateACW());
             ret.Add(ret[2].RotateACW());
             ret.Add(ret[0].FlipX());
@@ -1425,10 +1425,7 @@ namespace AdventOfCode.Year2020
                     var ret = new List<Board2[,]>();
                     foreach (var o in options)
                     {
-                        var remaining = allBoards.Where(b => o.Cast<Board2>()
-                                .All(b2 => b2 == null || b.ID != b2.ID))
-                            .ToList();
-                        foreach (var board2 in remaining)
+                        foreach (var board2 in allBoards.Where(b => o.Cast<Board2>().All(b2 => b2 == null || b.ID != b2.ID)))
                             if ((x == 0 || board2.LeftEdgeHash == o[x - 1, y].RightEdgeHash) && (y == 0 || board2.TopEdgeHash == o[x, y - 1].BottomEdgeHash))
                             {
                                 var newO = new Board2[size, size];
@@ -1580,7 +1577,7 @@ namespace AdventOfCode.Year2020
             {
                 for (var y = 0; y < size * 8; y++)
                 {
-                    if (boardWithMonsters.ValueAt(x,y) == '#')
+                    if (boardWithMonsters?.ValueAt(x,y) == '#')
                         countRough++;
                 }
 
@@ -1702,7 +1699,7 @@ namespace AdventOfCode.Year2020
             return -1;
         }
 
-        private static List<int> primes = new List<int>
+        private static List<int> _primes = new List<int>
         {
             2,3,5,7,11,13,17,19,23,29 
             ,31,37,41,43,47,53,59,61,67,71 
@@ -1722,21 +1719,22 @@ namespace AdventOfCode.Year2020
             ,877,881,883,887,907,911,919,929,937,941 
             ,947,953,967,971,977,983,991,997,1009,1013 
         };
-        public static int GetHash(List<short> player1Cards, List<short> player2Cards)
+
+        private static int GetHash(List<short> player1Cards, List<short> player2Cards)
         {
-            int hc= player1Cards.Count * primes[101] + player2Cards.Count *primes[102];
+            int hc= player1Cards.Count * _primes[101] + player2Cards.Count *_primes[102];
             int hc2= 0;
             int hc3= 0;
             for(int i=0;i<player1Cards.Count;++i)
             {
-                hc2+= unchecked( primes[i] *player1Cards[i]);
+                hc2+= unchecked( _primes[i] *player1Cards[i]);
             }
             for(int i=0;i<player2Cards.Count;++i)
             {
-                hc3+= unchecked(primes[(i + player1Cards.Count)] *player2Cards[i]);
+                hc3+= unchecked(_primes[(i + player1Cards.Count)] *player2Cards[i]);
             }
 
-            hc = unchecked(primes.Last() * hc + primes[19] * hc2 + primes[20] * hc3);
+            hc = unchecked(_primes.Last() * hc + _primes[19] * hc2 + _primes[20] * hc3);
             return hc;
         }
         private static int Combat(List<short> player1Cards, List<short> player2Cards,  Dictionary<int, int>  seenBefore)
@@ -1790,7 +1788,7 @@ namespace AdventOfCode.Year2020
         {
             var strings = "Year2020\\Data\\Day22.txt".ReadAll<string>();
             var player1Cards = strings.Skip(1).TakeWhile(s => !string.IsNullOrWhiteSpace(s)).ReadAll<short>().ToList();
-            var player2Cards = strings.Skip(3 + player1Cards.Count()).ReadAll<short>().ToList();
+            var player2Cards = strings.Skip(3 + player1Cards.Count).ReadAll<short>().ToList();
 
             var winner = Combat(player1Cards, player2Cards,  new Dictionary<int, int>());
 
@@ -1804,7 +1802,6 @@ namespace AdventOfCode.Year2020
 
         public static string Puzzle23Part1()
         {
-            //var cups = "389125467".Select(c => int.Parse(c.ToString())).ToList();
             var cups = "562893147".Select(c => int.Parse(c.ToString())).ToList();
 
             var current = 0;
@@ -1816,17 +1813,15 @@ namespace AdventOfCode.Year2020
                 cups.RemoveAt(index);
                 return ret;
             }
-            int GetDestinationCup(int index, List<int> pickedUp)
+            int GetDestinationCup(int index)
             {
                 var i = cups[index];
                 while (true)
                 {
                     i--;
-                    if (i < cups.Min())
-                        i = cups.Max();
+                    if (i < cups.Min()) i = cups.Max();
                     var dIndex = cups.IndexOf(i);
-                    if (dIndex != -1)
-                        return dIndex;
+                    if (dIndex != -1) return dIndex;
                 }
                 
             }
@@ -1840,7 +1835,7 @@ namespace AdventOfCode.Year2020
                     RemoveNextCupIndex(currentValue),
                     RemoveNextCupIndex(currentValue)
                 };
-                var d = (GetDestinationCup(cups.IndexOf(currentValue), pickedUp) ) ;
+                var d = (GetDestinationCup(cups.IndexOf(currentValue)) ) ;
                 if (d == cups.Count - 1)
                 {
                     cups.Add( pickedUp[0]);
@@ -1873,81 +1868,55 @@ namespace AdventOfCode.Year2020
             return s.ToString();
         }
 
-        public static string Puzzle23Part2()
+        
+        public static long Puzzle23Part2()
         {
-            // var cups = "389125467".Select(c => int.Parse(c.ToString())).ToList();
             var cups = "562893147".Select(c => int.Parse(c.ToString())).ToList();
-
-            var max = 1000000;
-             for (int i = cups.Count +1; i <= max;i++)
-                 cups.Add(i);
-            var current = 0;
-
-            int RemoveNextCupIndex()
+            
+            const int max = 1000000;
+            for (var i = cups.Count + 1; i <= max; i++)
             {
-                var index = (current + 1) % cups.Count;
-                var ret = cups[index];
-                cups.RemoveAt(index);
-                if (index < current)
-                    current--;
+                cups.Add(i);
+            }
+            var circularLinkedList = new UniqueCircularLinkList<int>(cups);
+           
+            CircularLinkListNode<int> RemoveCups()
+            {
+                var ret = circularLinkedList.Current.Next;
+                circularLinkedList.Current.SetNext(circularLinkedList.Current.Next.Next.Next.Next.Value);
+                circularLinkedList.Current.Next.SetPrevious(circularLinkedList.Current.Value);
+
                 return ret;
             }
-            int GetDestinationCup(int index, List<int> pickedUp)
+
+            CircularLinkListNode<int> GetDestinationCup(CircularLinkListNode<int> pickedUp)
             {
-                var value = cups[index];
+                var value = circularLinkedList.Current.Value;
                 while (true)
                 {
                     value--;
-                    if (value < 1) value = 9;
-                    if (pickedUp.Contains(value)) continue;
-                    var dIndex = cups.IndexOf(value);
-                    if (dIndex != -1)
-                        return dIndex;
-                }
-                
-            }
-
-            var sw = Stopwatch.StartNew();
-            for (int i = 0; i < 10000000; i++)
-            {
-                
-                var pickedUp = new List<int>
-                {
-                    RemoveNextCupIndex(),
-                    RemoveNextCupIndex(),
-                    RemoveNextCupIndex()
-                };
-                var d = (GetDestinationCup(current, pickedUp) ) ;
-                if (d == cups.Count - 1)
-                {
-                    cups.Add( pickedUp[0]);
-                    cups.Add( pickedUp[1]);
-                    cups.Add( pickedUp[2]);
-                }
-                else
-                {
-                    var addAt = d + 1 ;
-                    cups.Insert(addAt, pickedUp[2]);
-                    cups.Insert(addAt, pickedUp[1]);
-                    cups.Insert(addAt, pickedUp[0]);
-                    if (addAt <= current) current+=3;
-                }
-                current = (current + 1) % cups.Count;
-                if (sw.ElapsedMilliseconds > 3000)
-                {
-                    Console.WriteLine(i);
-                    sw.Restart();
+                    if (value < 1) value = max;
+                    if (pickedUp.Value == value ||
+                        pickedUp.Next.Value == value ||
+                        pickedUp.Next.Next.Value == value) continue;
+                    return circularLinkedList.Find(value);
                 }
             }
 
-            var s = new StringBuilder();
-            for (int i = 1; i < cups.Count; i++)
+            for (var i = 0; i < 10000000; i++)
             {
-                var index = (cups.IndexOf(1) + i) % cups.Count;
-                s.Append(cups[index]);
+                var pickedUp = RemoveCups();
+                var d = GetDestinationCup(pickedUp);
+                var temp = d.Next;
+                d.SetNext(pickedUp.Value);
+                pickedUp.Next.Next.SetNext(temp.Value);
+                circularLinkedList.MoveNext();
             }
-            return s.ToString();
+
+
+            return circularLinkedList.Find(1).Next.Value * (long) circularLinkedList.Find(1).Next.Next.Value;
         }
+
 
         public static int Puzzle24Part1()
         {
@@ -1958,7 +1927,6 @@ namespace AdventOfCode.Year2020
 
         private static Dictionary<(int x, int y), int> GetDictionary()
         {
-            var directions = new []{"e", "se", "sw", "w", "nw", "ne"};
             var lines = "Year2020\\Data\\Day24.txt".ReadAll<string>();
             Dictionary<(int x, int y), int> dict = new Dictionary<(int x, int y), int>();
             foreach (var line in lines)
@@ -2064,46 +2032,6 @@ namespace AdventOfCode.Year2020
         public static int Puzzle25Part2()
         {
             return int.MaxValue;
-        }
-
-        #endregion
-    }
-
-    public static class Computer
-    {
-        #region Fields
-
-        public const int InfiniteLoopDetected = 1;
-
-        #endregion
-
-        #region Methods
-
-        public static (int acc, int err) RunProgram(List<(string key, string value)> kvps)
-        {
-            var acc = 0;
-            var ind = 0;
-            var visited = new HashSet<int>();
-            while (true)
-            {
-                if (ind >= kvps.Count) return (acc, 0);
-                if (visited.Contains(ind))
-                    return (acc, InfiniteLoopDetected);
-                visited.Add(ind);
-                switch (kvps[ind].key)
-                {
-                    case "acc":
-                        acc += int.Parse(kvps[ind].value);
-                        ind++;
-                        break;
-                    case "jmp":
-                        ind += int.Parse(kvps[ind].value);
-                        break;
-                    case "nop":
-                        ind++;
-                        break;
-                }
-            }
         }
 
         #endregion

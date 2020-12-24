@@ -33,9 +33,9 @@ namespace AdventOfCode
         {
             Console.WriteLine($"=============={t.Name}===============");
             var methods = t.GetMethods(BindingFlags.Public | BindingFlags.Static).ToList();
-            //for (var i = 1; i <= 25; i++)
+            for (var i = 1; i <= 25; i++)
             //for (var i = 4; i <= 4; i++)
-               int i = DateTime.Now.Day;
+            //   int i = DateTime.Now.Day;
             {
                 var sw = Stopwatch.StartNew();
                 var m = methods.FirstOrDefault(m => m.Name == $"Puzzle{i}Part1");
