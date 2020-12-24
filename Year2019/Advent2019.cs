@@ -1,5 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
+using System.Text.RegularExpressions;
 using AdventOfCode.Functions;
 
 namespace AdventOfCode.Year2019
@@ -58,32 +62,178 @@ namespace AdventOfCode.Year2019
 
         public static int Puzzle3Part1()
         {
+            var lines = "Year2019\\Data\\Day03.txt".ReadAll<string>();
+            var p1 =lines[0]
+                .Split(",").Select(step => (step.Substring(0,1),int.Parse(step[1..]))).ToList();
+            var p2 =lines[1]
+                .Split(",").Select(step => (step.Substring(0,1),int.Parse(step[1..]))).ToList();
+           
+            var intersects = GetIntersects(p1,p2);
             
-            return int.MaxValue;
+
+            return intersects.Select(t => Math.Abs(t.Key.x) + Math.Abs(t.Key.y)).Min();
         }
 
-        private static int Puzzle3Part1Internal(string[] trees, int xInc, int yInc)
+        private static Dictionary<(int x, int y), (int t1, int t2)> GetIntersects(List<(string, int)> p1, List<(string, int)> p2)
         {
-           
-            return int.MaxValue;
+            
+            var path1 = new Dictionary<(int x, int y), int>();
+            var current = (0,0);
+            var t = 0;
+            foreach (var command in p1)
+            {
+                switch (command.Item1)
+                {
+                    case "R":
+                        for (int i = 0; i < command.Item2; i++)
+                        {
+                            t++;
+                            current = (current.Item1 + 1, current.Item2);
+                            if (path1.ContainsKey(current)) continue;
+                            path1.Add(current,t);
+                        }
+
+                        break;
+                    case "L":
+                        for (int i = 0; i < command.Item2; i++)
+                        {
+                            t++;
+                            current = (current.Item1 - 1, current.Item2);
+                            if (path1.ContainsKey(current)) continue;
+                            path1.Add(current,t);
+                        }
+
+                        break;
+                    case "U":
+                        for (int i = 0; i < command.Item2; i++)
+                        {
+                            t++;
+                            current = (current.Item1, current.Item2 + 1);
+                            if (path1.ContainsKey(current)) continue;
+                            path1.Add(current,t);
+                        }
+
+                        break;
+                    case "D":
+                        for (int i = 0; i < command.Item2; i++)
+                        {
+                            t++;
+                            current = (current.Item1, current.Item2 - 1);
+                            if (path1.ContainsKey(current)) continue;
+                            path1.Add(current,t);
+                        }
+
+                        break;
+                }
+            }
+            current = (0,0);
+            t = 0;
+            var intersects = new Dictionary<(int x, int y), (int t1, int t2)>();
+            foreach (var command in p2)
+            {
+                switch (command.Item1)
+                {
+                    case "R":
+                        for (int i = 0; i < command.Item2; i++)
+                        {
+                            t++;
+                            current = (current.Item1 + 1, current.Item2);
+                            if (path1.ContainsKey(current))
+                                intersects.Add(current,(path1[current], t));
+                        }
+
+                        break;
+                    case "L":
+                        for (int i = 0; i < command.Item2; i++)
+                        {
+                            t++;
+                            current = (current.Item1 - 1, current.Item2);
+                            if (path1.ContainsKey(current))
+                                intersects.Add(current,(path1[current], t));
+                        }
+
+                        break;
+                    case "U":
+                        for (int i = 0; i < command.Item2; i++)
+                        {
+                            t++;
+                            current = (current.Item1, current.Item2 + 1);
+                            if (path1.ContainsKey(current))
+                                intersects.Add(current,(path1[current], t));
+                        }
+
+                        break;
+                    case "D":
+                        for (int i = 0; i < command.Item2; i++)
+                        {
+                            t++;
+                            current = (current.Item1, current.Item2 - 1);
+                            if (path1.ContainsKey(current))
+                                intersects.Add(current,(path1[current], t));
+                        }
+
+                        break;
+                }
+            }
+
+            return intersects;
         }
 
         public static int Puzzle3Part2()
         {
+            var lines = "Year2019\\Data\\Day03.txt".ReadAll<string>();
+            var p1 =lines[0]
+                .Split(",").Select(step => (step.Substring(0,1),int.Parse(step[1..]))).ToList();
+            var p2 =lines[1]
+                .Split(",").Select(step => (step.Substring(0,1),int.Parse(step[1..]))).ToList();
            
-            return int.MaxValue;
+            var intersects = GetIntersects(p1,p2);
+            
+
+            return intersects.Select(t => Math.Abs(t.Value.t1) + Math.Abs(t.Value.t2)).Min();
         }
 
         public static int Puzzle4Part1()
         {
-            
-            return int.MaxValue;
+            int count = 0;
+            for (int i = 168630; i <= 718098; i++)
+            {
+                var s = i.ToString();
+                if (!"0123456789".ToCharArray().Any(c => Regex.IsMatch(s, $"{c}{c}"))) continue;
+                var ret = true;
+                for (int j = 0; j < s.Length -1; j++)
+                {
+                    if (s[j] <= s[j + 1]) continue;
+                    ret = false;
+                    break;
+                }
+
+                if (ret) count++;
+
+            }
+            return count;
         }
 
         public static int Puzzle4Part2()
         {
-            
-            return int.MaxValue;
+            int count = 0;
+            for (int i = 168630; i <= 718098; i++)
+            {
+                var s = i.ToString();
+                if (!"0123456789".ToCharArray()
+                    .Any(c => Regex.IsMatch(s, $"^{c}{c}[^{c}]|[^{c}]{c}{c}[^{c}]|[^{c}]{c}{c}$"))) continue;
+                var ret = true;
+                for (int j = 0; j < s.Length -1; j++)
+                {
+                    if (s[j] <= s[j + 1]) continue;
+                    ret = false;
+                    break;
+                }
+
+                if (ret)  count++;
+
+            }
+            return count;
         }
 
         public static int Puzzle5Part1()

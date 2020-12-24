@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace AdventOfCode.Year2019
@@ -23,21 +24,53 @@ namespace AdventOfCode.Year2019
             int i = 0;
             while (true)
             {
-                if (Memory[i] == 99)
-                    return this;
-                switch (Memory[i])
-                {
-                    case 1:
-                        Memory[Memory[i + 3]] = Memory[Memory[i + 2]] + Memory[Memory[i + 1]];
-                        i += 4;
-                        break;
-                    case 2 :
-                        Memory[Memory[i + 3]] = Memory[Memory[i + 2]] * Memory[Memory[i + 1]];
-                        i += 4;
-                        break;
-                }
+                // var opCode = Memory[i];
+                // if (opCode == 99)
+                //     return this;
+                // switch (GetDigit(100,opCode))
+                // {
+                //     case 1:
+                //         Memory[Memory[i + 3]] = InterpretParameter[Memory[i + 2]] + InterpretParameter[Memory[i + 1]];
+                //         i += 4;
+                //         break;
+                //     case 2 :
+                //         Memory[Memory[i + 3]] = InterpretParameter[Memory[i + 2]] * InterpretParameter[Memory[i + 1]];
+                //         i += 4;
+                //         break;
+                //     case 3 :
+                //         Memory[Memory[i + 1]] = Input;
+                //         i += 1;
+                //         break;
+                //     case 4 :
+                //         Output = Memory[Memory[i + 1]];
+                //         i += 1;
+                //         break;
+                // }
             }
         }
+
+        private int GetDigit(int digit, int number)
+        {
+            return number / digit % digit;
+        }
+        private int InterpretParameter(int p, int mode)
+        {
+            switch (mode)
+            {
+                case 0:
+                    return Memory[p];
+                default:
+                    return p;
+            }
+
+        }
+        public int Input { get; set; }
+        public int Output { get; set; }
+    }
+
+    public enum ParameterMode
+    {
+        PositionMode, ImmediateMode
     }
 
     public static class OpcodeComputerExtensions

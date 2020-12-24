@@ -34,15 +34,15 @@ namespace AdventOfCode
             Console.WriteLine($"=============={t.Name}===============");
             var methods = t.GetMethods(BindingFlags.Public | BindingFlags.Static).ToList();
             //for (var i = 1; i <= 25; i++)
-            for (var i = 20; i <= 20; i++)
-            //    int i = DateTime.Now.Day;
+            //for (var i = 4; i <= 4; i++)
+               int i = DateTime.Now.Day;
             {
                 var sw = Stopwatch.StartNew();
                 var m = methods.FirstOrDefault(m => m.Name == $"Puzzle{i}Part1");
                 if (m != null)
                 {
                     var answer = m.Invoke(null, null);
-
+                    
                     switch (answer)
                     {
                         case int l when l != int.MaxValue:

@@ -174,10 +174,6 @@ namespace AdventOfCode.Functions
 
         public int X { get; private set; }
         public int Y { get; private set; }
-        public List<(string, Board)> BoardsLeft { get;  } = new List<(string, Board)>();
-        public List<(string, Board)> BoardsRight { get;  } = new List<(string, Board)>();
-        public List<(string, Board)> BoardsTop { get;  } = new List<(string, Board)>();
-        public List<(string, Board)> BoardsBottom { get;  } = new List<(string, Board)>();
 
         #endregion
 
@@ -412,7 +408,6 @@ namespace AdventOfCode.Functions
                 }
 
             }
-
             return b;
         }
         public Board FlipY()
@@ -435,14 +430,15 @@ namespace AdventOfCode.Functions
         private int _leh = -1;
         private int _teh = -1;
         private int _beh = -1;
+
         public int RightEdgeHash()
         {
             if (_reh == -1)
             {
-                var arr = new char[Height];
+                int hash = 0;
                 for (int y = 0; y < Height; y++)
-                    arr[y] = _board[Width - 1, y];
-                _reh =  ((IStructuralEquatable) arr).GetHashCode(EqualityComparer<char>.Default);
+                    hash += HashCode.Combine(hash, _board[Width - 1, y]);
+                _reh = hash;
             }
 
             return _reh;
@@ -451,10 +447,10 @@ namespace AdventOfCode.Functions
         {
             if (_leh == -1)
             {
-                var arr = new char[Height];
+                int hash = 0;
                 for (int y = 0; y < Height; y++)
-                    arr[y] = _board[0, y];
-                _leh =  ((IStructuralEquatable) arr).GetHashCode(EqualityComparer<char>.Default);
+                    hash += HashCode.Combine(hash, _board[0, y]);
+                _leh = hash;
             }
 
             return _leh;
@@ -463,10 +459,10 @@ namespace AdventOfCode.Functions
         {
             if (_teh == -1)
             {
-                var arr = new char[Width];
+                int hash = 0;
                 for (int x = 0; x < Width; x++)
-                    arr[x] = _board[x, Height -1];
-                _teh =  ((IStructuralEquatable) arr).GetHashCode(EqualityComparer<char>.Default);
+                    hash += HashCode.Combine(hash, _board[x, 0]);
+                _teh = hash;
             }
 
             return _teh;
@@ -475,10 +471,10 @@ namespace AdventOfCode.Functions
         {
             if (_beh == -1)
             {
-                var arr = new char[Width];
+                int hash = 0;
                 for (int x = 0; x < Width; x++)
-                    arr[x] = _board[x, 0];
-                _beh =  ((IStructuralEquatable) arr).GetHashCode(EqualityComparer<char>.Default);
+                    hash += HashCode.Combine(hash, _board[x, Height -1]);
+                _beh = hash;
             }
 
             return _beh;

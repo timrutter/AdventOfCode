@@ -181,17 +181,17 @@ namespace AdventOfCode.Functions
 
             return -1;
         }
-        public static IEnumerable<T> TakeWhile<T>(this IEnumerable<T> vals, Func<T, bool> predicate)
-        {
-            var en = vals.GetEnumerator();
-            while (en.MoveNext())
-            {
-                if (predicate.Invoke(en.Current))
-                    yield return en.Current;
-                else break;
-            }
-            en.Dispose();
-        }
+        // public static IEnumerable<T> TakeWhile<T>(this IEnumerable<T> vals, Func<T, bool> predicate)
+        // {
+        //     var en = vals.GetEnumerator();
+        //     while (en.MoveNext())
+        //     {
+        //         if (predicate.Invoke(en.Current))
+        //             yield return en.Current;
+        //         else break;
+        //     }
+        //     en.Dispose();
+        // }
         public static IEnumerable<T> SkipFromEndWhile<T>(this IEnumerable<T> vals, Func<T, bool> predicate)
         {
             var valList = vals.ToList();
@@ -312,6 +312,10 @@ namespace AdventOfCode.Functions
         {
             var str = File.ReadAllLines(fileName);
             return str.Select(s => (T) Convert.ChangeType(s, typeof(T))).ToArray();
+        }
+        public static IEnumerable<T> ReadAll<T>(this IEnumerable<string> strings)
+        {
+            return strings.Select(s => (T) Convert.ChangeType(s, typeof(T)));
         }
 
 

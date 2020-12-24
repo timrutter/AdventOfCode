@@ -1,18 +1,81 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net.Security;
-using System.Runtime.CompilerServices;
+using System.Reflection.Metadata;
+using System.Runtime.ExceptionServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using AdventOfCode.Functions;
 
 namespace AdventOfCode.Year2020
 {
-
     public static class Advent2020
     {
+        #region Types
+
+        private class Board2 : IEquatable<Board2>
+        {
+            #region Constructors
+
+            public Board2(int leftHash, int rightHash, int bottomHash, int topHash, string id, Board board)
+            {
+                LeftEdgeHash = leftHash;
+                RightEdgeHash = rightHash;
+                TopEdgeHash = topHash;
+                BottomEdgeHash = bottomHash;
+                ID = id;
+                Board = board;
+            }
+
+            #endregion
+
+            #region Properties
+
+            public int LeftEdgeHash { get; }
+            public int RightEdgeHash { get; }
+            public int TopEdgeHash { get; }
+            public int BottomEdgeHash { get; }
+            public string ID { get; }
+            public Board Board { get; }
+
+            #endregion
+
+            #region Methods
+
+            public override string ToString()
+            {
+                return $"{ID} {GetHashCode()}";
+            }
+
+            public bool Equals(Board2 other)
+            {
+                if (ReferenceEquals(null, other)) return false;
+                if (ReferenceEquals(this, other)) return true;
+                return LeftEdgeHash == other.LeftEdgeHash && RightEdgeHash == other.RightEdgeHash &&
+                       TopEdgeHash == other.TopEdgeHash && BottomEdgeHash == other.BottomEdgeHash;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) return false;
+                if (ReferenceEquals(this, obj)) return true;
+                if (obj.GetType() != GetType()) return false;
+                return Equals((Board2) obj);
+            }
+
+            public override int GetHashCode()
+            {
+                return HashCode.Combine(LeftEdgeHash, RightEdgeHash, TopEdgeHash, BottomEdgeHash);
+            }
+
+            #endregion
+        }
+
+        #endregion
+
         #region Methods
 
         public static int Puzzle1Part1()
@@ -953,7 +1016,7 @@ namespace AdventOfCode.Year2020
         public static int Puzzle16Part1()
         {
             var lines = "Year2020\\Data\\Day16.txt".ReadAll<string>().ToList();
-            var rules = EnumerableExtensions.TakeWhile(lines, s => !string.IsNullOrEmpty(s)).ToList();
+            var rules = lines.TakeWhile( s => !string.IsNullOrEmpty(s)).ToList();
             var nearbyTickets = lines.Skip(rules.Count + 6).Select(s => s.SplitToType<int>(",")).ToList();
 
             Dictionary<string, List<(int min, int max)>> dict = rules.ToDictionary(s => s.Split(":")[0], s =>
@@ -972,7 +1035,7 @@ namespace AdventOfCode.Year2020
         public static long Puzzle16Part2()
         {
             var lines = "Year2020\\Data\\Day16.txt".ReadAll<string>().ToList();
-            var rules = EnumerableExtensions.TakeWhile(lines, s => !string.IsNullOrEmpty(s)).ToList();
+            var rules = lines.TakeWhile( s => !string.IsNullOrEmpty(s)).ToList();
             var myTicket = lines[rules.Count + 2].SplitToType<int>(",").ToList();
             var nearbyTickets = lines.Skip(rules.Count + 5).Select(s => s.SplitToType<int>(",").ToList()).ToList();
             nearbyTickets.Insert(0, myTicket);
@@ -1025,36 +1088,37 @@ namespace AdventOfCode.Year2020
                         array.Add((x, y, 0));
             }
 
-            
+
             //Console.WriteLine($"======INITIAL======");
             //Dump(array);
             for (var cycle = 1; cycle <= 6; cycle++)
             {
                 var newArray = new HashSet<(int x, int y, int z)>();
                 //Console.WriteLine($"======CYCLE={cycle}======");
-                var xmax = array.Max(t => t.x) +1;
-                var ymax = array.Max(t => t.y) +1;
-                var zmax = array.Max(t => t.z) +1;
-                for (var x = array.Min(t => t.x) -1; x <= xmax ; x++)
-                for (var y = array.Min(t => t.y) -1; y <= ymax ; y++)
-                for (var z = array.Min(t => t.z) -1; z <= zmax ; z++)
+                var xmax = array.Max(t => t.x) + 1;
+                var ymax = array.Max(t => t.y) + 1;
+                var zmax = array.Max(t => t.z) + 1;
+                for (var x = array.Min(t => t.x) - 1; x <= xmax; x++)
+                for (var y = array.Min(t => t.y) - 1; y <= ymax; y++)
+                for (var z = array.Min(t => t.z) - 1; z <= zmax; z++)
                 {
-                    var neighbours = BoardExtensions.GetNeighbours(x,y,z);
+                    var neighbours = BoardExtensions.GetNeighbours(x, y, z);
                     var activeCount = neighbours.Count(n => array.Contains((n.x, n.y, n.z)));
                     if (array.Contains((x, y, z)) && (activeCount == 2 || activeCount == 3))
-                        newArray.Add((x,y,z));
-                    else if (!array.Contains((x,y,z)) &&  activeCount == 3)
-                        newArray.Add((x,y,z));
+                        newArray.Add((x, y, z));
+                    else if (!array.Contains((x, y, z)) && activeCount == 3)
+                        newArray.Add((x, y, z));
                 }
 
                 array = newArray;
-                
+
                 //Dump(array);
                 //Console.WriteLine($"On={array.Count}");
             }
+
             return array.Count;
         }
-        
+
 
         private static void Dump(HashSet<(int x, int y, int z)> array)
         {
@@ -1064,12 +1128,14 @@ namespace AdventOfCode.Year2020
                 for (var y = array.Min(t => t.y); y <= array.Max(t => t.y); y++)
                 {
                     for (var x = array.Min(t => t.x); x <= array.Max(t => t.x); x++)
-                        Console.Write(array.Contains((x,y,z))  ? '#' : '.');
+                        Console.Write(array.Contains((x, y, z)) ? '#' : '.');
                     Console.WriteLine();
                 }
+
                 Console.WriteLine();
             }
         }
+
         private static void Dump2(HashSet<(int x, int y, int z, int w)> array)
         {
             for (var w = array.Min(t => t.w); w <= array.Max(t => t.w); w++)
@@ -1079,16 +1145,14 @@ namespace AdventOfCode.Year2020
                 for (var y = array.Min(t => t.y); y <= array.Max(t => t.y); y++)
                 {
                     for (var x = array.Min(t => t.x); x <= array.Max(t => t.x); x++)
-                        Console.Write(array.Contains((x,y,z,w))  ? '#' : '.');
+                        Console.Write(array.Contains((x, y, z, w)) ? '#' : '.');
                     Console.WriteLine();
                 }
-                
-                Console.WriteLine();
-                
-            }
 
+                Console.WriteLine();
+            }
         }
-    
+
 
         public static int Puzzle17Part2()
         {
@@ -1102,72 +1166,81 @@ namespace AdventOfCode.Year2020
                         array.Add((x, y, 0, 0));
             }
 
-           
-           // Console.WriteLine($"======INITIAL======");
-           // Dump2(array);
+
+            // Console.WriteLine($"======INITIAL======");
+            // Dump2(array);
             for (var cycle = 1; cycle <= 6; cycle++)
             {
                 var newArray = new HashSet<(int x, int y, int z, int w)>();
                 //Console.WriteLine($"======CYCLE={cycle}======");
-                var xmin = array.Min(t => t.x) -1;
-                var xmax = array.Max(t => t.x) +1;
-                var ymin = array.Min(t => t.y) -1;
-                var ymax = array.Max(t => t.y) +1;
-                var zmin = array.Min(t => t.z) -1;
-                var zmax = array.Max(t => t.z) +1;
-                var wmin = array.Min(t => t.w) -1;
-                var wmax = array.Max(t => t.w) +1;
-                for (var x = xmin; x <= xmax ; x++)
-                for (var y = ymin; y <= ymax ; y++)
-                for (var z = zmin; z <= zmax ; z++)
-                for (var w = wmin; w <= wmax ; w++)
+                var xmin = array.Min(t => t.x) - 1;
+                var xmax = array.Max(t => t.x) + 1;
+                var ymin = array.Min(t => t.y) - 1;
+                var ymax = array.Max(t => t.y) + 1;
+                var zmin = array.Min(t => t.z) - 1;
+                var zmax = array.Max(t => t.z) + 1;
+                var wmin = array.Min(t => t.w) - 1;
+                var wmax = array.Max(t => t.w) + 1;
+                for (var x = xmin; x <= xmax; x++)
+                for (var y = ymin; y <= ymax; y++)
+                for (var z = zmin; z <= zmax; z++)
+                for (var w = wmin; w <= wmax; w++)
                 {
-                    var neighbours = BoardExtensions.GetNeighbours(x,y,z,w);
+                    var neighbours = BoardExtensions.GetNeighbours(x, y, z, w);
                     var activeCount = neighbours.Count(n => array.Contains((n.x, n.y, n.z, n.w)));
                     var con = array.Contains((x, y, z, w));
                     if (con && (activeCount == 2 || activeCount == 3))
-                        newArray.Add((x,y,z,w));
-                    else if (!con &&  activeCount == 3)
-                        newArray.Add((x,y,z,w));
+                        newArray.Add((x, y, z, w));
+                    else if (!con && activeCount == 3)
+                        newArray.Add((x, y, z, w));
                 }
 
                 array = newArray;
-                
+
                 //Dump2(array);
                 //Console.WriteLine($"On={array.Count}");
             }
+
             return array.Count;
         }
 
         public static long Puzzle18Part1()
         {
-            
             var sums = "Year2020\\Data\\Day18.txt".ReadAll<string>().ToList();
             long ret = 0;
-            int i ;
+            int i;
+
             long Evaluate(string s)
             {
-                
                 long total = 0;
                 var add = -1;
                 for (; i < s.Length; i++)
                 {
                     var c = s[i];
                     if (char.IsWhiteSpace(c)) continue;
-                    if (char.IsDigit(c) && add == -1) total = int.Parse(c.ToString());
+                    if (char.IsDigit(c) && add == -1)
+                    {
+                        total = int.Parse(c.ToString());
+                    }
                     else if (char.IsDigit(c) && add > -1)
                     {
                         if (add == 0)
                             total += int.Parse(c.ToString());
                         else total *= int.Parse(c.ToString());
                     }
-                    else if (c == '+') add = 0;
-                    else if (c == '*') add = 1;
+                    else if (c == '+')
+                    {
+                        add = 0;
+                    }
+                    else if (c == '*')
+                    {
+                        add = 1;
+                    }
                     else if (c == '(')
                     {
                         switch (add)
                         {
-                            case -1 :
+                            case -1:
                                 i++;
                                 total = Evaluate(s);
                                 break;
@@ -1179,7 +1252,6 @@ namespace AdventOfCode.Year2020
                                 i++;
                                 total *= Evaluate(s);
                                 break;
-                                
                         }
                     }
                     else if (c == ')')
@@ -1190,6 +1262,7 @@ namespace AdventOfCode.Year2020
 
                 return total;
             }
+
             foreach (var s in sums)
             {
                 i = 0;
@@ -1197,6 +1270,7 @@ namespace AdventOfCode.Year2020
                 //Console.WriteLine(t);
                 ret += t;
             }
+
             return ret;
         }
 
@@ -1206,72 +1280,78 @@ namespace AdventOfCode.Year2020
 
             static string ReplaceAdds(string s1)
             {
-                return Regex.Replace(s1, @"[0-9]+( \+ [0-9]+)+", 
-                    match => match.Value.SplitToType<long>("+").Sum().ToString() );
+                return Regex.Replace(s1, @"[0-9]+( \+ [0-9]+)+",
+                    match => match.Value.SplitToType<long>("+").Sum().ToString());
             }
 
             static long EvaluateRegex(string s1)
             {
                 var s2 = s1;
                 while (s2.Contains('('))
-                {
                     s2 = Regex.Replace(s2, @"\([0-9 +*]+\)",
                         match => EvaluateNoBrackets(match.Value.TrimStart('(').TrimEnd(')')).ToString());
-                }
 
                 return EvaluateNoBrackets(s2);
             }
 
-            static long EvaluateNoBrackets(string s) => ReplaceAdds(s).SplitToType<long>(" * ").Product();
+            static long EvaluateNoBrackets(string s)
+            {
+                return ReplaceAdds(s).SplitToType<long>(" * ").Product();
+            }
 
             return sums.Sum(EvaluateRegex);
         }
 
-       private static  List<string> Evaluate( int rule, IReadOnlyDictionary<int, string> rules)
+        private static List<string> Evaluate(int rule, IReadOnlyDictionary<int, string> rules)
         {
             var r = rules[rule];
             if (r.StartsWith("\""))
-                return new List<string>{ $"{r.RemoveQuotes()}"};
+                return new List<string> {$"{r.RemoveQuotes()}"};
             return r.Split('|').SelectMany(bit => bit.Trim()
                     .SplitToType<int>(" ")
                     .Select(i => Evaluate(i, rules))
-                    .Aggregate(new List<string>(), (current, l) => current.Count == 0 ? l : Append(current.ToList(), l))).ToList();
+                    .Aggregate(new List<string>(),
+                        (current, l) => current.Count == 0 ? l : Append(current.ToList(), l)))
+                .ToList();
         }
 
         public static int Puzzle19Part1()
         {
-            var rules = "Year2020\\Data\\Day19.txt".ReadAllKeyValuePairs<int,string>(": ").ToDictionary(d => d.key, d => d.value);
+            var rules = "Year2020\\Data\\Day19.txt".ReadAllKeyValuePairs<int, string>(": ")
+                .ToDictionary(d => d.key, d => d.value);
             var strings = "Year2020\\Data\\Day19a.txt".ReadAll<string>().ToList();
 
             return strings.Count(s => Evaluate(0, rules).Contains(s));
         }
+
         private static List<string> Append(List<string> l1, List<string> l2)
         {
             return (from s1 in l1 from s2 in l2 select $"{s1}{s2}").ToList();
         }
+
         public static int Puzzle19Part2()
         {
-            var rules = "Year2020\\Data\\Day19.txt".ReadAllKeyValuePairs<int,string>(": ").ToDictionary(d => d.key, d => d.value);
+            var rules = "Year2020\\Data\\Day19.txt".ReadAllKeyValuePairs<int, string>(": ")
+                .ToDictionary(d => d.key, d => d.value);
             var strings = "Year2020\\Data\\Day19a.txt".ReadAll<string>().ToList();
 
             var ret42 = Evaluate(42, rules);
             var ret31 = Evaluate(31, rules);
-            
+
             return strings.Count(s =>
             {
                 var temp = s;
-                int count42 = 0;
-                while(temp.Length > 0)
+                var count42 = 0;
+                while (temp.Length > 0)
                 {
-                    
                     var s42 = ret42.FirstOrDefault(temp.StartsWith);
                     if (s42 == null) break;
                     temp = temp[s42.Length..];
                     count42++;
                     if (count42 <= 1) continue;
                     var count31 = 0;
-                    bool ok = true;
-                    while(temp.Length > 0)
+                    var ok = true;
+                    while (temp.Length > 0)
                     {
                         var s31 = ret31.FirstOrDefault(temp.EndsWith);
                         if (s31 == null)
@@ -1279,18 +1359,16 @@ namespace AdventOfCode.Year2020
                             ok = false;
                             break;
                         }
-                        temp = temp.Substring(0,temp.Length - s31.Length);
-                        count31++;
 
+                        temp = temp.Substring(0, temp.Length - s31.Length);
+                        count31++;
                     }
 
                     if (count31 == 0)
                         return false;
                     if (ok && count31 > 0 && count31 < count42 && temp.Length == 0)
-                    {
                         // Console.WriteLine(s);
                         return true;
-                    }
                 }
 
                 return false;
@@ -1301,365 +1379,213 @@ namespace AdventOfCode.Year2020
         {
             var strings = "Year2020\\Data\\Day20.txt".ReadAll<string>();
             var dict = new Dictionary<string, Board>();
-            for (int i = 0; i < strings.Length; i++)
+            for (var i = 0; i < strings.Length; i++)
             {
-                string s = strings[i];
+                var s = strings[i];
                 i++;
-                var b = new Board(10,10);
+                var b = new Board(10, 10);
                 b.LoadFromStrings(strings.Skip(i).Take(10));
                 i += 10;
                 dict.Add(s, b);
             }
 
             return dict;
-        } 
+        }
+        public static List<Board> GetAllBoards(Board b)
+        {
+            var ret = new List<Board>();
+            ret.Add(b);
+            ret.Add(b.RotateACW());
+            ret.Add(ret[1].RotateACW());
+            ret.Add(ret[2].RotateACW());
+            ret.Add(ret[0].FlipX());
+            ret.Add(ret[0].FlipY());
+            ret.Add(ret[1].FlipX());
+            ret.Add(ret[1].FlipY());
+            ret.Add(ret[2].FlipX());
+            ret.Add(ret[2].FlipY());
+            ret.Add(ret[3].FlipX());
+            ret.Add(ret[3].FlipY());
+            return ret;
+        }
+
         public static long Puzzle20Part1()
         {
             var dict1 = Puzzle20LoadData();
-            var size = (int)Math.Sqrt(dict1.Count);
+            var size = (int) Math.Sqrt(dict1.Count);
 
-            List<Board> GetAllBoards(Board b)
-            {
-                var ret = new List<Board>();
-                ret.Add(b);
-                ret.Add(b.RotateACW());
-                ret.Add( ret[1].RotateACW());
-                ret.Add( ret[2].RotateACW());
-                ret.Add( ret[3].RotateACW());
-                ret.Add( ret[0].FlipX());
-                ret.Add( ret[0].FlipY());
-                ret.Add( ret[1].FlipX());
-                ret.Add( ret[1].FlipY());
-                ret.Add( ret[2].FlipX());
-                ret.Add( ret[2].FlipY());
-                ret.Add( ret[3].FlipX());
-                ret.Add( ret[3].FlipY());
-                return ret;
-            }
+            var allBoards = dict1.SelectMany(kvp => GetAllBoards(kvp.Value)
+                .Select(b => new Board2(b.LeftEdgeHash(), b.RightEdgeHash(), b.BottomEdgeHash(),
+                    b.TopEdgeHash(), kvp.Key, b)).Distinct()).ToList();
 
-            var boards = new Dictionary<string, List<Board>>();
-
-            bool MatchRight(Board b1, Board b2)
+            List<Board2[,]> FillNextSquare(List<Board2[,]> options, int x, int y)
             {
-                return b1.RightEdgeHash() == b2.LeftEdgeHash();
-            }
-            bool MatchLeft(Board b1, Board b2)
-            {
-                return b2.RightEdgeHash() == b1.LeftEdgeHash();
-            }
-            bool MatchTop(Board b1, Board b2)
-            {
-                return b1.TopEdgeHash() == b2.BottomEdgeHash();
-            }
-            bool MatchBottom(Board b1, Board b2)
-            {
-                return b2.TopEdgeHash() == b1.BottomEdgeHash();
-            }
-            
-            var correctBoards = new Dictionary<string, Board>();
-            bool MatchBoards(string b1Key, string b2Key,Board b1,Board b2)
-            {
-                b1.Dump();
-                b2.Dump();
-                if (MatchRight(b1, b2))
+                while (true)
                 {
-                    correctBoards[b1Key] = b1;
-                    correctBoards[b2Key] = b2;
-                    
-                    if (!b1.BoardsRight.Contains((b2Key,b2)))
-                        b1.BoardsRight.Add( (b2Key,b2));
-                    if (!b2.BoardsLeft.Contains((b1Key,b1)))
-                        b2.BoardsLeft.Add((b1Key,b1));
-                    return true;
-                }
-
-                if (MatchLeft(b1, b2))
-                {
-                    correctBoards[b1Key] = b1;
-                    correctBoards[b2Key] = b2;
-                    
-                    if (!b1.BoardsLeft.Contains((b2Key,b2)))
-                        b1.BoardsLeft.Add( (b2Key,b2));
-                    if (!b2.BoardsRight.Contains((b1Key,b1)))
-                        b2.BoardsRight.Add((b1Key,b1));
-                    return true;
-                }
-                if (MatchTop(b1, b2))
-                {
-                    correctBoards[b1Key] = b1;
-                    correctBoards[b2Key] = b2;
-                    if (!b1.BoardsTop.Contains((b2Key,b2)))
-                        b1.BoardsTop.Add( (b2Key,b2));
-                    if (!b2.BoardsBottom.Contains((b1Key,b1)))
-                        b2.BoardsBottom .Add((b1Key,b1));
-                    return true;
-                }
-                if (MatchBottom(b1, b2))
-                {
-                    correctBoards[b1Key] = b1;
-                    correctBoards[b2Key] = b2;
-                    if (!b1.BoardsBottom.Contains((b2Key,b2)))
-                        b1.BoardsBottom.Add( (b2Key,b2));
-                    if (!b2.BoardsTop.Contains((b1Key,b1)))
-                        b2.BoardsTop .Add((b1Key,b1));
-                    return true;
-                }
-
-                return false;
-            }
-            foreach (var kvp in dict1)
-                boards.Add(kvp.Key, GetAllBoards(kvp.Value));
-            foreach (var board1 in boards)
-            foreach (var board2 in boards)
-            {
-                if (board1.Key == board2.Key ) continue;
-                if (correctBoards.ContainsKey(board1.Key))
-                {
-                    if (correctBoards.ContainsKey(board2.Key)) 
-                        if (MatchBoards(board1.Key , board2.Key, correctBoards[board1.Key], correctBoards[board2.Key]))
-                        {
-                            //Console.WriteLine($"{board1.Key} matches {board2.Key} using b1 ");
-                            continue;
-                        }
-                    for (var index = 0; index < board2.Value.Count; index++)
+                    var ret = new List<Board2[,]>();
+                    foreach (var o in options)
                     {
-                        var board2Board = board2.Value[index];
-                        if (MatchBoards(board1.Key, board2.Key, correctBoards[board1.Key], board2Board))
-                        {
-                            //board2Board.Dump();
-                            //Console.WriteLine($"{board1.Key} matches {board2.Key} using b1 {index}");
-                        }
+                        var remaining = allBoards.Where(b => o.Cast<Board2>()
+                                .All(b2 => b2 == null || b.ID != b2.ID))
+                            .ToList();
+                        foreach (var board2 in remaining)
+                            if ((x == 0 || board2.LeftEdgeHash == o[x - 1, y].RightEdgeHash) && (y == 0 || board2.TopEdgeHash == o[x, y - 1].BottomEdgeHash))
+                            {
+                                var newO = new Board2[size, size];
+                                for (var i = 0; i < size; i++)
+                                for (var j = 0; j < size; j++)
+                                    newO[i, j] = o[i, j];
+                                newO[x, y] = board2;
+                                ret.Add(newO);
+                            }
                     }
 
-                    continue;
-                }
-
-                if (correctBoards.ContainsKey(board2.Key))
-                {
-                    for (var index = 0; index < board1.Value.Count; index++)
+                    Console.WriteLine(ret.Count);
+                    if (x + 1 == size)
                     {
-                        var board1Board = board1.Value[index];
-                        if (MatchBoards(board1.Key, board2.Key, board1Board, correctBoards[board2.Key]))
-                        {
-                            //board1Board.Dump();
-                            correctBoards[board2.Key].Dump();
-                           // Console.WriteLine($"{board1.Key} matches {board2.Key} using b1 {index}");
-                            break;
-                        }
+                        x = 0;
+                        y++;
+                    }
+                    else
+                    {
+                        x++;
                     }
 
-                    continue;
-                }
-
-                for (var i = 0; i < board1.Value.Count; i++)
-                {
-                    var board1Board = board1.Value[i];
-                    bool found = false;
-                    for (var index = 0; index < board2.Value.Count; index++)
-                    {
-                        var board2Board = board2.Value[index];
-                        if (MatchBoards(board1.Key, board2.Key, board1Board, board2Board))
-                        {
-                            //board1Board.Dump();
-                            //board2Board.Dump();
-                            //Console.WriteLine($"{board1.Key} matches {board2.Key} using b1 {i} and b2 {index}");
-                            found = true;
-                            break;
-                        }
-                    }
-
-                    if (found) break;
-                }
-            }
-
-            
-            var tls = correctBoards.Where(v =>
-                 v.Value.BoardsRight.Count> 0 && v.Value.BoardsBottom.Count > 0);
-            var lefts = correctBoards.Where(v =>
-                 v.Value.BoardsRight.Count> 0 && v.Value.BoardsBottom.Count > 0 && v.Value.BoardsTop.Count > 0);
-            var bls = correctBoards.Where(v =>
-                 v.Value.BoardsRight.Count> 0  && v.Value.BoardsTop.Count > 0);
-            
-
-            List<List< (string id, Board board)>> GetLineOptions( (string id, Board board) board, int level)
-            {
-                if (level == size -1)
-                    return board.board.BoardsRight.Select(br => new List<(string id, Board board)>{br}).ToList();
-                var options = new List<List<(string id, Board board)>>();
-               
-                foreach (var b in board.board.BoardsRight)
-                {
-                    
-                    var opts = GetLineOptions(b, level + 1);
-                    foreach (var o in opts)
-                    {
-                        if (o.Contains(b)) continue;
-                        o.Insert(0,b);
-                        options.Add(o);
-                    }
-                }
-
-                return options;
-
-            }
-
-            
-            List<(string id, Board Board)[,]> arrayOptions = new List<(string id, Board Board)[,]>();
-            var tlopts = new List<List<(string id, Board board)>>();
-            var leftopts = new List<List<(string id, Board board)>>();
-            var blopts = new List<List<(string id, Board board)>>();
-            foreach (var tl in tls)
-            {
-                var options = GetLineOptions((tl.Key, tl.Value), 1);
-                foreach (var o in options)
-                {
-                    o.Insert(0,(tl.Key, tl.Value));
-                    
-                }
-                tlopts.AddRange(options);
-              
-            }
-            foreach (var bl in bls)
-            {
-                var options = GetLineOptions((bl.Key, bl.Value), 1);
-                foreach(var o in options)
-                    o.Insert(0,(bl.Key, bl.Value));
-                blopts.AddRange(options);
-              
-            }
-            foreach (var l in lefts)
-            {
-                var options = GetLineOptions((l.Key, l.Value), 1);
-                foreach(var o in options)
-                    o.Insert(0,(l.Key, l.Value));
-                leftopts.AddRange(options);
-            }
-            foreach (var opt in tlopts)
-            {
-                arrayOptions.Add(new (string id, Board Board)[size,size]);
-                for (int i = 0; i < size; i++)
-                    arrayOptions.Last()[i, 0] = opt[i];
-            }
-             bool CanFit(List<(string id, Board board)> leftopt, (string id, Board Board)[,] ao, in int y)
-            {
-                for (int x = 0; x < size; x++)
-                for (int y1 = 0; y1 < y; y1++)
-                {
-                    if (leftopt.Contains(ao[x, y1])) return false;
+                    if (y == size) return ret;
+                    options = ret;
                 }
                 
-                for (int i = 0; i < leftopt.Count; i++)
-                    if (!leftopt[i].board.BoardsTop.Contains(ao[i, y]))
-                        return false;
-
-                return true;
             }
 
-             List<List<(string id, Board board)>> appropriateLefts = null;
-            for (int y = 1; y < size -1; y++)
+
+            var arrayOptions = FillNextSquare(allBoards.Select(b =>
             {
-                var arrOpsNew = new List<(string id, Board Board)[,]>();
-                for (int x = 0; x < size; x++)
-                {
-                    var allAbove = arrayOptions.Select(a => a[x, y - 1]).Distinct().ToList();
-                    appropriateLefts =
-                        appropriateLefts?.Where(l =>
-                        {
-                            return  
-                                   allAbove.Any(t => t.Board.BoardsBottom.Contains(l[x]));
-                        }).ToList() ??
-                        leftopts.Where(l => allAbove.Any(t => t.Board.BoardsBottom.Contains(l[x]))).ToList();
-                    
-                }
+                var ret = new Board2[size, size];
+                ret[0, 0] = b;
+                return ret;
+            }).ToList(), 1, 0);
 
-                var ls = appropriateLefts.ToList();
-                for (var index = 0; index < ls.Count; index++)
-                {
-                    var t = ls[index];
-                    foreach (var ao in arrayOptions)
-                    {
-                        if (CanFit(t, ao, y - 1))
-                        {
-                            var newAo = new (string id, Board Board)[size, size];
-                            for (int x = 0; x < size; x++)
-                            for (int y1 = 0; y1 < size; y1++)
-                            {
-                                newAo[x, y1] = ao[x, y1];
-                            }
-
-                            for (int j = 0; j < t.Count; j++)
-                            {
-                                newAo[j, y] = t[j];
-                            }
-
-                            arrOpsNew.Add(newAo);
-                        }
-                    }
-                }
-
-                arrayOptions = arrOpsNew;
-            }
-            var arrOpsNew2= new List<(string id, Board Board)[,]>();
-            for (var i = 0; i < blopts.Count; i++)
-            {
-                foreach (var ao in arrayOptions)
-                {
-                    var newAo = new (string id, Board Board)[size, size];
-                    for (int x = 0; x < size; x++)
-                    for (int y1 = 0; y1 < size; y1++)
-                    {
-                        newAo [x,y1] = ao[x, y1];
-                    }
-                    if (CanFit(blopts[i], newAo, size -2))
-                    {
-                        for (int j = 0; j < blopts[i].Count; j++)
-                            newAo[j, size - 1] = blopts[i][j];
-                        arrOpsNew2.Add(newAo);
-                    }
-                }
-
-            }
-
-            arrayOptions = arrOpsNew2;
             var first = arrayOptions[0];
-            for (int y = 0; y < first.GetLength(1) * 10; y++)
+            for (var y = 0; y < first.GetLength(1) * 10; y++)
             {
-                for (int x = 0; x < first.GetLength(0)*10; x++)
+                for (var x = 0; x < first.GetLength(0) * 10; x++)
 
                 {
-                    var board = first[x/10, y/10];
-                    Console.Write(board.Board.ValueAt(x%10, y%10));
+                    var board = first[x / 10, y / 10].Board.FlipY();
+                    
+                    Console.Write(board.ValueAt(x % 10, y % 10));
                     if (x % 10 == 9)
                         Console.Write(" ");
                 }
+
                 Console.WriteLine();
                 if (y % 10 == 9)
                     Console.WriteLine();
             }
-            for (int y = 0; y < first.GetLength(1); y++)
+
+            for (var y = 0; y < first.GetLength(1); y++)
             {
-                for (int x = 0; x < first.GetLength(0) ; x++)
+                for (var x = 0; x < first.GetLength(0); x++)
                 {
-                    Console.Write(first[x,y].id);
+                    Console.Write(first[x, y].ID);
                     Console.Write(" ");
                 }
-                Console.WriteLine();
 
+                Console.WriteLine();
             }
+
             var num =
-                long.Parse(arrayOptions[0][0, 0].id.Substring(5, 4)) *
-                long.Parse(arrayOptions[0][0, size -1].id.Substring(5, 4)) *
-                long.Parse(arrayOptions[0][size -1, 0].id.Substring(5, 4)) *
-                long.Parse(arrayOptions[0][size -1, size -1].id.Substring(5, 4));
+                long.Parse(arrayOptions[0][0, 0].ID.Substring(5, 4)) *
+                long.Parse(arrayOptions[0][0, size - 1].ID.Substring(5, 4)) *
+                long.Parse(arrayOptions[0][size - 1, 0].ID.Substring(5, 4)) *
+                long.Parse(arrayOptions[0][size - 1, size - 1].ID.Substring(5, 4));
             return num;
         }
 
-        
 
         public static int Puzzle20Part2()
         {
-            
-            return int.MaxValue;
+            var strings = "Year2020\\Data\\Day20a.txt".ReadAll<string>();
+            var size = 12;
+            var boardStart = new Board(size * 8, size * 8);
+            var x2 = 0;
+            var y2 = 0;
+            for (var y = 0; y < strings.Length; y++)
+            {
+                if (y % 10 == 0 || y % 10 == 9) continue;
+                for (var x = 0; x < strings[0].Length; x++)
+                {
+                    if (x % 10 == 0 || x % 10 == 9) continue;
+                    boardStart.SetValueAt(x2, y2, strings[y][x]);
+                    x2++;
+                }
+
+                y2++;
+                x2 = 0;
+            }
+
+            boardStart.Dump();
+            var boards = GetAllBoards(boardStart);
+
+            var pattern = new List<string>
+            {
+                "                  # ",
+                "#    ##    ##    ###",
+                " #  #  #  #  #  #   "
+            };
+
+            Board boardWithMonsters = null;
+            var count = 0;
+            foreach (var board in boards)
+            {
+                for (var x = 0; x < size * 8 - pattern[0].Length; x++)
+                {
+                    for (var y = 0; y < size * 8 - 3; y++)
+                    {
+                        var match = true;
+
+                        for (var yP = 0; yP < pattern.Count; yP++)
+                        for (var xP = 0; xP < pattern[0].Length; xP++)
+                        {
+                            if (pattern[yP][xP] != '#') continue;
+                            if (board.ValueAt(x + xP, y + yP) != '#')
+                                match = false;
+                        }
+
+                        if (match)
+                        {
+                            count++;
+                            for (var yP = 0; yP < pattern.Count; yP++)
+                            for (var xP = 0; xP < pattern[0].Length; xP++)
+                            {
+                                if (pattern[yP][xP] != '#') continue;
+                                board.SetValueAt(x + xP, y + yP, 'O');
+                            }
+
+                        }
+                    }
+
+                }
+
+                if (count > 0)
+                {
+                    boardWithMonsters = board;
+                    break;
+
+                }
+            }
+
+            var countRough = 0;
+            for (var x = 0; x < size * 8 ; x++)
+            {
+                for (var y = 0; y < size * 8; y++)
+                {
+                    if (boardWithMonsters.ValueAt(x,y) == '#')
+                        countRough++;
+                }
+
+            }
+            return countRough;
         }
 
         public static int Puzzle21Part1()
@@ -1669,22 +1595,23 @@ namespace AdventOfCode.Year2020
             foreach (var line in lines)
             {
                 var split = line.Split("(contains ");
-                lines2.Add((split[0].Split(" ", StringSplitOptions.RemoveEmptyEntries).ToList(),split[1].TrimEnd(')').Split(", ").Where(s => !string.IsNullOrWhiteSpace(s)).ToList()));
+                lines2.Add((split[0].Split(" ", StringSplitOptions.RemoveEmptyEntries).ToList(),
+                    split[1].TrimEnd(')').Split(", ").Where(s => !string.IsNullOrWhiteSpace(s)).ToList()));
             }
+
             var allIngredients = lines2.SelectMany(f => f.ingredients).Distinct();
-            var allAllergens = lines2.SelectMany(l => l.allergens).Distinct().ToDictionary(d => d, d => new List<string>());
+            var allAllergens = lines2.SelectMany(l => l.allergens).Distinct()
+                .ToDictionary(d => d, d => new List<string>());
             foreach (var allergen in allAllergens.Keys.ToList())
             {
                 var foods = lines2.Where(l => l.allergens.Contains(allergen)).ToList();
                 var commonIngredients = foods
                     .SelectMany(f => f.ingredients).Distinct().Where(f => foods.All(f2 => f2.ingredients.Contains(f)));
                 allAllergens[allergen] = commonIngredients.ToList();
-
             }
 
             var dictionary = new Dictionary<string, string>();
             while (allAllergens.Any())
-            {
                 foreach (var allAllergen in allAllergens.Keys.ToList())
                 {
                     var unknown = allAllergens[allAllergen].Except(dictionary.Values).ToList();
@@ -1694,7 +1621,6 @@ namespace AdventOfCode.Year2020
                         allAllergens.Remove(allAllergen);
                     }
                 }
-            }
 
             var noAllergens = allIngredients.Except(dictionary.Values).ToList();
             return noAllergens.Sum(a => lines2.Sum(l2 => l2.ingredients.Count(i => i == a)));
@@ -1707,21 +1633,22 @@ namespace AdventOfCode.Year2020
             foreach (var line in lines)
             {
                 var split = line.Split("(contains ");
-                lines2.Add((split[0].Split(" ", StringSplitOptions.RemoveEmptyEntries).ToList(),split[1].TrimEnd(')').Split(", ").Where(s => !string.IsNullOrWhiteSpace(s)).ToList()));
+                lines2.Add((split[0].Split(" ", StringSplitOptions.RemoveEmptyEntries).ToList(),
+                    split[1].TrimEnd(')').Split(", ").Where(s => !string.IsNullOrWhiteSpace(s)).ToList()));
             }
-            var allAllergens = lines2.SelectMany(l => l.allergens).Distinct().ToDictionary(d => d, d => new List<string>());
+
+            var allAllergens = lines2.SelectMany(l => l.allergens).Distinct()
+                .ToDictionary(d => d, d => new List<string>());
             foreach (var allergen in allAllergens.Keys.ToList())
             {
                 var foods = lines2.Where(l => l.allergens.Contains(allergen)).ToList();
                 var commonIngredients = foods
                     .SelectMany(f => f.ingredients).Distinct().Where(f => foods.All(f2 => f2.ingredients.Contains(f)));
                 allAllergens[allergen] = commonIngredients.ToList();
-
             }
 
             var dictionary = new Dictionary<string, string>();
             while (allAllergens.Any())
-            {
                 foreach (var allAllergen in allAllergens.Keys.ToList())
                 {
                     var unknown = allAllergens[allAllergen].Except(dictionary.Values).ToList();
@@ -1731,42 +1658,402 @@ namespace AdventOfCode.Year2020
                         allAllergens.Remove(allAllergen);
                     }
                 }
-            }
 
             var allergens = dictionary.Keys.ToList();
             allergens.Sort();
             var ings = allergens.Select(a => dictionary[a]).ToList();
-            return String.Join(",", ings);
+            return string.Join(",", ings);
         }
 
-        public static int Puzzle22Part1()
+        public static long Puzzle22Part1()
         {
-            return int.MaxValue;
+            // var strings = "Year2020\\Data\\Day22.txt".ReadAll<string>();
+            // var player1Cards = strings.Skip(1).TakeWhile(s => !string.IsNullOrWhiteSpace(s)).ReadAll<int>().ToList();
+            // var player2Cards = strings.Skip(3 + player1Cards.Count()).ReadAll<int>().ToList();
+            //
+            // while (player1Cards.Count() > 0 && player2Cards.Count() > 0)
+            // {
+            //     if (player1Cards[0] > player2Cards[0])
+            //     {
+            //         player1Cards.Add(player1Cards[0]);
+            //         player1Cards.Add(player2Cards[0]);
+            //     }
+            //     else 
+            //     {
+            //         player2Cards.Add(player2Cards[0]);
+            //         player2Cards.Add(player1Cards[0]);
+            //     }
+            //     player1Cards.RemoveAt(0);
+            //     player2Cards.RemoveAt(0);
+            // }
+            //
+            // long score = 0;
+            // if (player1Cards.Count > 0)
+            //     for (int i = player1Cards.Count - 1; i >= 0; i--)
+            //     {
+            //         score += player1Cards[i] * (player1Cards.Count - i);
+            //     }
+            // else 
+            //     for (int i = player2Cards.Count - 1; i >= 0; i--)
+            //     {
+            //         score += player2Cards[i] * (player2Cards.Count - i);
+            //     }
+            // return score;
+            return -1;
         }
 
-        public static int Puzzle22Part2()
+        private static List<int> primes = new List<int>
         {
-            return int.MaxValue;
+            2,3,5,7,11,13,17,19,23,29 
+            ,31,37,41,43,47,53,59,61,67,71 
+            ,73,79,83,89,97,101,103,107,109,113 
+            ,127,131,137,139,149,151,157,163,167,173 
+            ,179,181,191,193,197,199,211,223,227,229 
+            ,233,239,241,251,257,263,269,271,277,281 
+            ,283,293,307,311,313,317,331,337,347,349 
+            ,353,359,367,373,379,383,389,397,401,409 
+            ,419,421,431,433,439,443,449,457,461,463 
+            ,467,479,487,491,499,503,509,521,523,541 
+            ,547,557,563,569,571,577,587,593,599,601 
+            ,607,613,617,619,631,641,643,647,653,659 
+            ,661,673,677,683,691,701,709,719,727,733 
+            ,739,743,751,757,761,769,773,787,797,809 
+            ,811,821,823,827,829,839,853,857,859,863 
+            ,877,881,883,887,907,911,919,929,937,941 
+            ,947,953,967,971,977,983,991,997,1009,1013 
+        };
+        public static int GetHash(List<short> player1Cards, List<short> player2Cards)
+        {
+            int hc= player1Cards.Count * primes[101] + player2Cards.Count *primes[102];
+            int hc2= 0;
+            int hc3= 0;
+            for(int i=0;i<player1Cards.Count;++i)
+            {
+                hc2+= unchecked( primes[i] *player1Cards[i]);
+            }
+            for(int i=0;i<player2Cards.Count;++i)
+            {
+                hc3+= unchecked(primes[(i + player1Cards.Count)] *player2Cards[i]);
+            }
+
+            hc = unchecked(primes.Last() * hc + primes[19] * hc2 + primes[20] * hc3);
+            return hc;
+        }
+        private static int Combat(List<short> player1Cards, List<short> player2Cards,  Dictionary<int, int>  seenBefore)
+        {
+            HashSet<int> seenThis = new HashSet<int>();
+            var startHash = GetHash(player1Cards, player2Cards);
+            if (seenBefore.ContainsKey(startHash))
+            {
+                return seenBefore[startHash];
+            }
+            var hash = startHash;
+            int winner = 1;
+            while (player1Cards.Any() && player2Cards.Any())
+            {
+                if (seenThis.Contains(hash))
+                {
+                    seenBefore.Add(startHash,1);
+                    return 1;
+                }
+                seenThis.Add(hash);
+                var c1 = player1Cards.First();
+                var c2 = player2Cards.First();
+                if (player1Cards.Count >= c1 + 1 && player2Cards.Count >= c2 + 1)
+                     winner = Combat(player1Cards.Skip(1).Take(c1).ToList(), player2Cards.Skip(1).Take(c2).ToList(),   seenBefore);
+                else if (player1Cards[0] > player2Cards[0])
+                    winner = 1;
+                else
+                    winner = 2;
+
+                if (winner == 1)
+                {
+                    player1Cards.Add(c1);
+                    player1Cards.Add(c2);
+                }
+                else
+                {
+                    player2Cards.Add(c2);
+                    player2Cards.Add(c1);
+                }
+                player1Cards.RemoveAt(0);
+                player2Cards.RemoveAt(0);
+                hash = GetHash(player1Cards, player2Cards);
+            }
+            
+            seenBefore.Add(startHash,winner);
+            return winner;
+            
         }
 
-        public static int Puzzle23Part1()
+        public static long Puzzle22Part2()
         {
-            return int.MaxValue;
+            var strings = "Year2020\\Data\\Day22.txt".ReadAll<string>();
+            var player1Cards = strings.Skip(1).TakeWhile(s => !string.IsNullOrWhiteSpace(s)).ReadAll<short>().ToList();
+            var player2Cards = strings.Skip(3 + player1Cards.Count()).ReadAll<short>().ToList();
+
+            var winner = Combat(player1Cards, player2Cards,  new Dictionary<int, int>());
+
+            long score = 0;
+            var cards = (winner == 1 ? player1Cards : player2Cards);
+            for (int i = cards.Count - 1; i >= 0; i--)
+                score += cards[i] * (cards.Count - i);
+            
+            return score;
         }
 
-        public static int Puzzle23Part2()
+        public static string Puzzle23Part1()
         {
-            return int.MaxValue;
+            //var cups = "389125467".Select(c => int.Parse(c.ToString())).ToList();
+            var cups = "562893147".Select(c => int.Parse(c.ToString())).ToList();
+
+            var current = 0;
+
+            int RemoveNextCupIndex(int currentValue)
+            {
+                var index = (cups.IndexOf(currentValue) + 1) % cups.Count;
+                var ret = cups[index];
+                cups.RemoveAt(index);
+                return ret;
+            }
+            int GetDestinationCup(int index, List<int> pickedUp)
+            {
+                var i = cups[index];
+                while (true)
+                {
+                    i--;
+                    if (i < cups.Min())
+                        i = cups.Max();
+                    var dIndex = cups.IndexOf(i);
+                    if (dIndex != -1)
+                        return dIndex;
+                }
+                
+            }
+            for (int i = 0; i < 100; i++)
+            {
+                
+                var currentValue = cups[current];
+                var pickedUp = new List<int>
+                {
+                    RemoveNextCupIndex(currentValue),
+                    RemoveNextCupIndex(currentValue),
+                    RemoveNextCupIndex(currentValue)
+                };
+                var d = (GetDestinationCup(cups.IndexOf(currentValue), pickedUp) ) ;
+                if (d == cups.Count - 1)
+                {
+                    cups.Add( pickedUp[0]);
+                    cups.Add( pickedUp[1]);
+                    cups.Add( pickedUp[2]);
+                }
+                else
+                {
+                    cups.Insert((d + 1) % (cups.Count), pickedUp[2]);
+                    cups.Insert((d + 1) % (cups.Count), pickedUp[1]);
+                    cups.Insert((d + 1) % (cups.Count), pickedUp[0]);
+                }
+                current = (cups.IndexOf(currentValue) + 1) % cups.Count;
+                // for (int j = 0; j < cups.Count; j++)
+                // {
+                //     if (j == current)
+                //         Console.Write($"({cups[j]}) ");
+                //     else 
+                //         Console.Write($"{cups[j]} ");
+                // }
+                // Console.WriteLine();
+            }
+
+            var s = new StringBuilder();
+            for (int i = 1; i < cups.Count; i++)
+            {
+                var index = (cups.IndexOf(1) + i) % cups.Count;
+                s.Append(cups[index]);
+            }
+            return s.ToString();
+        }
+
+        public static string Puzzle23Part2()
+        {
+            // var cups = "389125467".Select(c => int.Parse(c.ToString())).ToList();
+            var cups = "562893147".Select(c => int.Parse(c.ToString())).ToList();
+
+            var max = 1000000;
+             for (int i = cups.Count +1; i <= max;i++)
+                 cups.Add(i);
+            var current = 0;
+
+            int RemoveNextCupIndex()
+            {
+                var index = (current + 1) % cups.Count;
+                var ret = cups[index];
+                cups.RemoveAt(index);
+                if (index < current)
+                    current--;
+                return ret;
+            }
+            int GetDestinationCup(int index, List<int> pickedUp)
+            {
+                var value = cups[index];
+                while (true)
+                {
+                    value--;
+                    if (value < 1) value = 9;
+                    if (pickedUp.Contains(value)) continue;
+                    var dIndex = cups.IndexOf(value);
+                    if (dIndex != -1)
+                        return dIndex;
+                }
+                
+            }
+
+            var sw = Stopwatch.StartNew();
+            for (int i = 0; i < 10000000; i++)
+            {
+                
+                var pickedUp = new List<int>
+                {
+                    RemoveNextCupIndex(),
+                    RemoveNextCupIndex(),
+                    RemoveNextCupIndex()
+                };
+                var d = (GetDestinationCup(current, pickedUp) ) ;
+                if (d == cups.Count - 1)
+                {
+                    cups.Add( pickedUp[0]);
+                    cups.Add( pickedUp[1]);
+                    cups.Add( pickedUp[2]);
+                }
+                else
+                {
+                    var addAt = d + 1 ;
+                    cups.Insert(addAt, pickedUp[2]);
+                    cups.Insert(addAt, pickedUp[1]);
+                    cups.Insert(addAt, pickedUp[0]);
+                    if (addAt <= current) current+=3;
+                }
+                current = (current + 1) % cups.Count;
+                if (sw.ElapsedMilliseconds > 3000)
+                {
+                    Console.WriteLine(i);
+                    sw.Restart();
+                }
+            }
+
+            var s = new StringBuilder();
+            for (int i = 1; i < cups.Count; i++)
+            {
+                var index = (cups.IndexOf(1) + i) % cups.Count;
+                s.Append(cups[index]);
+            }
+            return s.ToString();
         }
 
         public static int Puzzle24Part1()
         {
-            return int.MaxValue;
+            var dict = GetDictionary();
+
+            return dict.Values.Count(v => v % 2 == 1);
+        }
+
+        private static Dictionary<(int x, int y), int> GetDictionary()
+        {
+            var directions = new []{"e", "se", "sw", "w", "nw", "ne"};
+            var lines = "Year2020\\Data\\Day24.txt".ReadAll<string>();
+            Dictionary<(int x, int y), int> dict = new Dictionary<(int x, int y), int>();
+            foreach (var line in lines)
+            {
+                var l = line;
+                int x = 0;
+                int y = 0;
+                while (l.Length > 0)
+                {
+                    if (l.StartsWith("e"))
+                    {
+                        x++;
+                        l = l.Substring(1);
+                    }
+                    else if (l.StartsWith("se"))
+                    {
+                        y--;
+                        l = l.Substring(2);
+                    }
+                    else if (l.StartsWith("sw"))
+                    {
+                        x--;
+                        y--;
+                        l = l.Substring(2);
+                    }
+                    else if (l.StartsWith("w"))
+                    {
+                        x--;
+                        l = l.Substring(1);
+                    }
+                    else if (l.StartsWith("nw"))
+                    {
+                        y++;
+                        l = l.Substring(2);
+                    }
+                    else if (l.StartsWith("ne"))
+                    {
+                        y++;
+                        x++;
+                        l = l.Substring(2);
+                    }
+                }
+
+                if (!dict.ContainsKey((x, y)))
+                    dict[(x, y)] = 0;
+                dict[(x, y)]++;
+            }
+
+            return dict;
         }
 
         public static int Puzzle24Part2()
         {
-            return int.MaxValue;
+            var hash = new HashSet<(int x, int y)>(GetDictionary().Where(d => d.Value % 2 == 1).Select(k => k.Key));
+           
+            int GetBlackCount((int x, int y) adjTile)
+            {
+                var bc = 0;
+                if (hash.Contains((adjTile.x + 1, adjTile.y))) bc++;
+                if (hash.Contains((adjTile.x , adjTile.y -1))) bc++;
+                if (hash.Contains((adjTile.x -1, adjTile.y -1))) bc++;
+                if (hash.Contains((adjTile.x -1, adjTile.y))) bc++;
+                if (hash.Contains((adjTile.x, adjTile.y +1))) bc++;
+                if (hash.Contains((adjTile.x + 1, adjTile.y+1))) bc++;
+                return bc;
+            }
+            for (int i = 0; i < 100; i++)
+            {
+                var newHash =new HashSet<(int x, int y)>();
+                foreach (var tile in hash)
+                {
+                    var blackCount = GetBlackCount(tile);
+                   
+                    if (blackCount == 1 || blackCount == 2)
+                        newHash.Add(tile);
+
+                    void CheckAdjacentWhite((int x, int y) adjTile)
+                    {
+                        if (hash.Contains(adjTile)) return;
+                        if (GetBlackCount(adjTile) == 2)
+                            newHash.Add(adjTile);
+                    }
+
+                    CheckAdjacentWhite((tile.x + 1, tile.y));
+                    CheckAdjacentWhite((tile.x , tile.y -1));
+                    CheckAdjacentWhite((tile.x -1, tile.y -1));
+                    CheckAdjacentWhite((tile.x -1, tile.y));
+                    CheckAdjacentWhite((tile.x, tile.y +1));
+                    CheckAdjacentWhite((tile.x + 1, tile.y+1));
+
+                }
+                hash = newHash;
+            }
+
+            return hash.Count;
         }
 
         public static int Puzzle25Part1()
