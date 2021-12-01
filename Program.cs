@@ -5,6 +5,7 @@ using System.Reflection;
 using AdventOfCode.Year2015;
 using AdventOfCode.Year2019;
 using AdventOfCode.Year2020;
+using AdventOfCode.Year2021;
 
 namespace AdventOfCode
 {
@@ -21,8 +22,9 @@ namespace AdventOfCode
                 // Execute(typeof(Advent2016));
                 // Execute(typeof(Advent2017));
                 // Execute(typeof(Advent2018));
-                 //Execute(typeof(Advent2019));
-                 Execute(typeof(Advent2020));
+                //Execute(typeof(Advent2019));
+                Execute(typeof(Advent2020));
+                //Execute(typeof(Advent2021));
 
 
                 cons = Console.ReadLine();
