@@ -7,7 +7,23 @@ using System.Text.RegularExpressions;
 
 namespace AdventOfCode.Functions
 {
-    public static class Functions
+    public static class DumpArray
+    {
+        static void dumpXYBoard(this int[,] board)
+        {
+            for (int y = 0; y < board.GetLength(1); y++)
+            {
+                for (int x = 0; x < board.GetLength(0); x++)
+                {
+                    Console.Write(board[x, y] + " ");
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine();
+        }
+    }
+
+public static class Functions
     {
         #region Methods
 
@@ -260,10 +276,10 @@ namespace AdventOfCode.Functions
     {
         #region Methods
 
-        public static Board ReadBoard(this string filename)
+        public static Board<char> ReadBoard(this string filename)
         {
             var read = File.ReadAllLines(filename);
-            var board = new Board(read[0].Length, read.Length);
+            var board = new Board<char>(read[0].Length, read.Length, char.MaxValue);
             for (var y = 0; y < read.Length; y++)
             {
                 var s = read[y];

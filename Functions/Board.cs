@@ -7,88 +7,110 @@ namespace AdventOfCode.Functions
 {
     public static class BoardExtensions
     {
-       
-        public static Board Jump(this Board board, int x, int y)
+        public static Board<char> LoadCharBoard(this IEnumerable<string> strings)
+        {
+            var ss = strings.ToList();
+            var board = new Board<char>(ss.Count, ss.First().Length, char.MaxValue);
+            for (int y = 0; y < ss.Count; y++)
+            for (int x = 0; x < ss[y].Length; x++)
+                board.SetValueAt(x, y,ss[y][x]);
+            return board;
+        }
+        public static Board<T> LoadBoard<T>(this IEnumerable<string> strings,string splitChar, T def) where T : struct
+        {
+            var ss = strings.ToList();
+            var board = new Board<T>(ss.Count, ss.First().Split(splitChar).Length, def);
+            for (int y = 0; y < ss.Count; y++)
+            {
+                var bits = ss[y].Split(splitChar);
+                for (int x = 0; x < bits.Length; x++)
+                    board.SetValueAt(x, y, (T) Convert.ChangeType(bits[x], typeof(T)));
+            }
+
+            return board;
+        }
+
+        public static Board<T> Jump<T>(this Board<T> board, int x, int y) where T: struct
         {
             board.SetPosition(x,y);
             return board;
         }
-        public static Board Up(this Board board, int count =1)
+        public static Board<T> Up<T>(this Board<T> board, int count =1) where T : struct
         {
             board.MoveUp(count);
             return board;
         }
-        public static Board Down(this Board board, int count =1)
+        public static Board<T> Down<T>(this Board<T> board, int count =1) where T : struct
         {
             board.MoveDown(count);
             return board;
         }
-        public static Board Left(this Board board, int count =1)
+        public static Board<T> Left<T>(this Board<T> board, int count =1) where T : struct
         {
             board.MoveLeft(count);
             return board;
         }
-        public static Board Right(this Board board, int count =1)
+        public static Board<T> Right<T>(this Board<T> board, int count =1) where T : struct
         {
             board.MoveRight(count);
             return board;
         }
-        public static Board UpLeft(this Board board, int count =1)
+        public static Board<T> UpLeft<T>(this Board<T> board, int count =1) where T : struct
         {
             board.MoveUpLeft(count);
             return board;
         }
-        public static Board UpRight(this Board board, int count =1)
+        public static Board<T> UpRight<T>(this Board<T> board, int count =1) where T : struct
         {
             board.MoveUpRight(count);
             return board;
         }
-        public static Board DownRight(this Board board, int count =1)
+        public static Board<T> DownRight<T>(this Board<T> board, int count =1) where T : struct
         {
             board.MoveDownRight(count);
             return board;
         }
-        public static Board DownLeft(this Board board, int count =1)
+        public static Board<T> DownLeft<T>(this Board<T> board, int count =1) where T : struct
         {
             board.MoveDownLeft(count);
             return board;
         }
-        public static Board UpWhile(this Board board, Func<char, bool> predicate)
+        public static Board<T> UpWhile<T>(this Board<T> board, Func<T, bool> predicate) where T : struct
         {
             board.MoveUpWhile(predicate);
             return board;
         }
-        public static Board DownWhile(this Board board, Func<char, bool> predicate)
+        public static Board<T> DownWhile<T>(this Board<T> board, Func<T, bool> predicate) where T : struct
         {
             board.MoveDownWhile(predicate);
             return board;
         }
-        public static Board LeftWhile(this Board board, Func<char, bool> predicate)
+        public static Board<T> LeftWhile<T>(this Board<T> board, Func<T, bool> predicate) where T : struct
         {
             board.MoveLeftWhile(predicate);
             return board;
         }
-        public static Board RightWhile(this Board board, Func<char, bool> predicate)
+        public static Board<T> RightWhile<T>(this Board<T> board, Func<T, bool> predicate) where T : struct
         {
             board.MoveRightWhile(predicate);
             return board;
         }
-        public static Board UpLeftWhile(this Board board, Func<char, bool> predicate)
+        public static Board<T> UpLeftWhile<T>(this Board<T> board, Func<T, bool> predicate) where T : struct
         {
             board.MoveUpLeftWhile(predicate);
             return board;
         }
-        public static Board UpRightWhile(this Board board, Func<char, bool> predicate)
+        public static Board<T> UpRightWhile<T>(this Board<T> board, Func<T, bool> predicate) where T : struct
         {
             board.MoveUpRightWhile(predicate);
             return board;
         }
-        public static Board DownRightWhile(this Board board, Func<char, bool> predicate)
+        public static Board<T> DownRightWhile<T>(this Board<T> board, Func<T, bool> predicate) where T : struct
         {
             board.MoveDownRightWhile(predicate);
             return board;
         }
-        public static Board DownLeftWhile(this Board board, Func<char, bool> predicate)
+        public static Board<T> DownLeftWhile<T>(this Board<T> board, Func<T, bool> predicate) where T : struct
         {
             board.MoveDownLeftWhile(predicate);
             return board;
@@ -133,25 +155,26 @@ namespace AdventOfCode.Functions
               
         }
     }
-    public class Board
+    public class Board<T> where T:struct
     {
-        
         #region Fields
 
-        private char[,] _board;
+        private T[,] _board;
+        private T _def;
 
         #endregion
 
         #region Constructors
 
-        public Board(int width, int height)
+        public Board(int width, int height, T def)
         {
-            _board = new char[width, height];
+            _board = new T[width, height];
+            _def = def;
         }
 
-        public Board(Board from)
+        public Board(Board<T> from)
         {
-            _board = new char[from.Width, from.Height];
+            _board = new T[from.Width, from.Height];
             Array.Copy(from._board, _board, _board.Length);
         }
 
@@ -167,13 +190,34 @@ namespace AdventOfCode.Functions
                     yield return ( x, y);
             }
         }
+        public IEnumerable<(int x, int y)> Traverse
+        {
+            get
+            {
+                for (var x = 0; x < Width; x++)
+                for (var y = 0; y < Height; y++)
+                {
+                    SetPosition(x,y);
+                    yield return (x, y);
+                }
+            }
+        }
+
         public int Width => _board.GetLength(0);
         public int Height => _board.GetLength(1);
 
-        public char Value => XInRange(X) && YInRange(Y) ? _board[X, Y] : char.MaxValue;
+        public T Value
+        {
+            get => XInRange(X) && YInRange(Y) ? _board[X, Y] : _def;
+            set
+            {
+                if (!XInRange(X) || !YInRange(Y)) return ;
+                _board[X, Y] = value;
+            }
+        }
 
-        public int X { get; private set; }
-        public int Y { get; private set; }
+        public int X { get; set; }
+        public int Y { get; set; }
 
         #endregion
 
@@ -185,19 +229,20 @@ namespace AdventOfCode.Functions
             Y = y;
         }
 
-        public char ValueAt(int x, int y)
+        public T ValueAt(int x, int y)
         {
             if (XInRange(x) && YInRange(y))
                 return _board[x, y];
-            return char.MaxValue;
+            return _def;
         }
 
-        public bool SetValueAt(int x, int y, char ch)
+        public bool SetValueAt(int x, int y, T ch)
         {
             if (!XInRange(x) || !YInRange(y)) return false;
             _board[x, y] = ch;
             return true;
         }
+
 
         public bool XInRange(int x)
         {
@@ -209,52 +254,52 @@ namespace AdventOfCode.Functions
             return y >= 0 && y < _board.GetLength(1);
         }
 
-        public char MoveUp(int count = 1)
+        public T MoveUp(int count = 1)
         {
             Y -= count;
             return Value;
         }
 
-        public char MoveDown(int count = 1)
+        public T MoveDown(int count = 1)
         {
             Y += count;
             return Value;
         }
 
-        public char MoveLeft(int count = 1)
+        public T MoveLeft(int count = 1)
         {
             X -= count;
             return Value;
         }
 
-        public char MoveRight(int count = 1)
+        public T MoveRight(int count = 1)
         {
             X += count;
             return Value;
         }
 
-        public char MoveUpLeft(int xcount = 1, int ycount = 1)
+        public T MoveUpLeft(int xcount = 1, int ycount = 1)
         {
             Y -= ycount;
             X -= xcount;
             return Value;
         }
 
-        public char MoveUpRight(int xcount = 1, int ycount = 1)
+        public T MoveUpRight(int xcount = 1, int ycount = 1)
         {
             Y -= ycount;
             X += xcount;
             return Value;
         }
 
-        public char MoveDownRight(int xcount = 1, int ycount = 1)
+        public T MoveDownRight(int xcount = 1, int ycount = 1)
         {
             Y += ycount;
             X += xcount;
             return Value;
         }
 
-        public char MoveDownLeft(int xcount = 1, int ycount = 1)
+        public T MoveDownLeft(int xcount = 1, int ycount = 1)
         {
             Y += ycount;
             X -= xcount;
@@ -277,7 +322,7 @@ namespace AdventOfCode.Functions
 
         public bool CanMoveDownLeft(int xcount = 1, int ycount = 1) => YInRange(Y + ycount) && XInRange(X - xcount);
         
-        public char MoveUpWhile(Func<char,bool> predicate)
+        public T MoveUpWhile(Func<T,bool> predicate)
         {
             while (true)
                 if (CanMoveUp() && predicate.Invoke(Value)) MoveUp();
@@ -285,7 +330,7 @@ namespace AdventOfCode.Functions
             return Value;
         }
 
-        public char MoveDownWhile(Func<char,bool> predicate)
+        public T MoveDownWhile(Func<T,bool> predicate)
         {
             while (true)
                 if (CanMoveDown() && predicate.Invoke(Value)) MoveDown();
@@ -293,7 +338,7 @@ namespace AdventOfCode.Functions
             return Value;
         }
 
-        public char MoveLeftWhile(Func<char,bool> predicate)
+        public T MoveLeftWhile(Func<T,bool> predicate)
         {
             while (true)
                 if (CanMoveLeft() && predicate.Invoke(Value)) MoveLeft();
@@ -301,7 +346,7 @@ namespace AdventOfCode.Functions
             return Value;
         }
 
-        public char MoveRightWhile(Func<char,bool> predicate)
+        public T MoveRightWhile(Func<T,bool> predicate)
         {
             while (true)
                 if (CanMoveRight() && predicate.Invoke(Value)) MoveRight();
@@ -309,7 +354,7 @@ namespace AdventOfCode.Functions
             return Value;
         }
 
-        public char MoveUpLeftWhile(Func<char,bool> predicate)
+        public T MoveUpLeftWhile(Func<T,bool> predicate)
         {
             while (true)
                 if (CanMoveUpLeft() && predicate.Invoke(Value)) MoveUpLeft();
@@ -317,7 +362,7 @@ namespace AdventOfCode.Functions
             return Value;
         }
 
-        public char MoveUpRightWhile(Func<char,bool> predicate)
+        public T MoveUpRightWhile(Func<T,bool> predicate)
         {
             while (true)
                 if (CanMoveUpRight() && predicate.Invoke(Value)) MoveUpRight();
@@ -325,7 +370,7 @@ namespace AdventOfCode.Functions
             return Value;
         }
 
-        public char MoveDownRightWhile(Func<char,bool> predicate)
+        public T MoveDownRightWhile(Func<T,bool> predicate)
         {
             while (true)
                 if (CanMoveDownRight() && predicate.Invoke(Value)) MoveDownRight();
@@ -333,7 +378,7 @@ namespace AdventOfCode.Functions
             return Value;
         }
 
-        public char MoveDownLeftWhile(Func<char,bool> predicate)
+        public T MoveDownLeftWhile(Func<T,bool> predicate)
         {
             while (true)
                 if (CanMoveDownLeft() && predicate.Invoke(Value)) MoveDownLeft();
@@ -353,30 +398,22 @@ namespace AdventOfCode.Functions
             }
         }
 
-        public int CountValues(char c)
+        public int CountValues(T c)
         {
             var count = 0;
             for (var x = 0; x < Width; x++)
             for (var y = 0; y < Height; y++)
-                if (_board[x, y] == '#')
+                if (_board[x, y].Equals(c))
                     count++;
             return count;
         }
 
         #endregion
 
-        public void LoadFromStrings(IEnumerable<string> strings)
-        {
-            var ss = strings.ToList();
-            _board = new char[ss.Count, ss.First().Length];
-            for (int y = 0; y < ss.Count; y++)
-                for (int x = 0; x < ss[y].Length; x++)
-                    _board[x,y] = ss[y][x];
-        }
 
-        public Board RotateACW()
+        public Board<T> RotateACW()
         {
-            var b = new Board(Height, Width);
+            var b = new Board<T>(Height, Width, _def);
             var x2 = 0;
             
             for (int y = 0; y < Height; y++)
@@ -394,9 +431,9 @@ namespace AdventOfCode.Functions
 
             return b;
         }
-        public Board FlipX()
+        public Board<T> FlipX()
         {
-            var b = new Board(Width,Height);
+            var b = new Board<T>(Width,Height, _def);
 
             for (int y = 0; y < Height; y++)
             {
@@ -410,9 +447,9 @@ namespace AdventOfCode.Functions
             }
             return b;
         }
-        public Board FlipY()
+        public Board<T> FlipY()
         {
-            var b = new Board(Width,Height);
+            var b = new Board<T>(Width,Height,_def);
             for (int x = 0; x < Width; x++)
             {
                 var y2 = 0;
