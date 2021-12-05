@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AdventOfCode.Functions
+namespace AdventOfCode.Helpers
 {
     /// <summary>
     ///     A generic tree class to be inherited from. Provides functions for recursing the tree

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace AdventOfCode.Functions
+namespace AdventOfCode.Helpers
 {
     public static class Maths
     {

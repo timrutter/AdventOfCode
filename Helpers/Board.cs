@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AdventOfCode.Functions
+namespace AdventOfCode.Helpers
 {
     public static class BoardExtensions
     {
@@ -166,7 +166,7 @@ namespace AdventOfCode.Functions
 
         #region Constructors
 
-        public Board(int width, int height, T def)
+        public Board(int width, int height, T def = default(T))
         {
             _board = new T[width, height];
             _def = def;
@@ -202,6 +202,17 @@ namespace AdventOfCode.Functions
                 }
             }
         }
+        public IEnumerable<T> Values
+        {
+            get
+            {
+                for (var x = 0; x < Width; x++)
+                for (var y = 0; y < Height; y++)
+                {
+                    yield return ValueAt(x,y);
+                }
+            }
+        }
 
         public int Width => _board.GetLength(0);
         public int Height => _board.GetLength(1);
@@ -218,6 +229,36 @@ namespace AdventOfCode.Functions
 
         public int X { get; set; }
         public int Y { get; set; }
+
+        public IEnumerable<T> GetRow(int y)
+        {
+            for (int x = 0; x < _board.GetLength(0); x++)
+            {
+                yield return ValueAt(x, y);
+            }
+        }
+        public IEnumerable<IEnumerable<T>> GetRows()
+        {
+            for (int y = 0; y < _board.GetLength(1); y++)
+            {
+                yield return GetRow(y);
+            }
+        }
+
+        public IEnumerable<T> GetColumn(int x)
+        {
+            for (int y = 0; y < _board.GetLength(1); y++)
+            {
+                yield return ValueAt(x, y);
+            }
+        }
+        public IEnumerable<IEnumerable<T>> GetColumns()
+        {
+            for (int x = 0; x < _board.GetLength(0); x++)
+            {
+                yield return GetColumn(x);
+            }
+        }
 
         #endregion
 
@@ -515,6 +556,11 @@ namespace AdventOfCode.Functions
             }
 
             return _beh;
+        }
+
+        public int Count(Func<T, bool> func)
+        {
+            return Values.Count(func);
         }
     }
 }

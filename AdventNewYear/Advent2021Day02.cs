@@ -1,6 +1,4 @@
-﻿using AdventOfCode.Functions;
-
-namespace AdventOfCode.AdventNewYear
+﻿namespace AdventOfCode.AdventNewYear
 {
     public class Advent2021Day02 : Solution
     {

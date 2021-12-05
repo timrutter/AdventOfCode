@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text.RegularExpressions;
-using AdventOfCode.Functions;
+using AdventOfCode.Helpers;
 
 namespace AdventOfCode.Year2019
 {

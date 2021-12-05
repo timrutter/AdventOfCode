@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using AdventOfCode.Functions;
+using AdventOfCode.Helpers;
 
 namespace AdventOfCode.Advent2020
 {

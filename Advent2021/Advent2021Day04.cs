@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using AdventOfCode.Functions;
+using AdventOfCode.Helpers;
 
 namespace AdventOfCode.Advent2021
 {
@@ -14,53 +14,13 @@ namespace AdventOfCode.Advent2021
 
         private static bool IsWinner(Board<int> board)
         {
-            for (int y = 0; y < 5; y++)
-            {
-                bool isDone = true;
-                for (int x = 0; x < 5; x++)
-                {
-                    if (board.ValueAt(x, y) != -1)
-                    {
-                        isDone = false;
-                        break;
-                    }
-                }
-
-                if (isDone) return true;
-            }
-            for (int x = 0; x < 5; x++)
-            {
-                bool isDone = true;
-                for (int y = 0; y < 5; y++)
-                {
-                    if (board.ValueAt(x, y) != -1)
-                    {
-                        isDone = false;
-                        break;
-                    }
-                }
-
-                if (isDone) return true;
-            }
-
-            return false;
+            return board.GetRows().Any(r => r.All(v => v == -1)) || 
+                   board.GetColumns().Any(c => c.All(v => v == -1));
         }
 
         private static int CalcResult(Board<int> board)
         {
-            int res = 0;
-            for (int y = 0; y < 5; y++)
-            {
-                for (int x = 0; x < 5; x++)
-                {
-                    if (board.ValueAt(x, y) != -1)
-                    {
-                        res += board.ValueAt(x, y);
-                    }
-                }
-            }
-
-            return res;
+            return board.Values.Where(v => v != -1).Sum();
         }
 
         private static List<Board<int>> LoadBoards(List<string> origStrings)

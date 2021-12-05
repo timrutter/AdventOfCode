@@ -1,4 +1,4 @@
-﻿using AdventOfCode.Functions;
+﻿using AdventOfCode.Helpers;
 
 namespace AdventOfCode.Advent2021
 {

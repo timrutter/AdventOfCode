@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AdventOfCode.Functions;
+using AdventOfCode.Helpers;
 
 namespace AdventOfCode.Advent2020
 {

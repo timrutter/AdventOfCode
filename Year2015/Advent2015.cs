@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using AdventOfCode.Functions;
+using AdventOfCode.Helpers;
 
 namespace AdventOfCode.Year2015
 {

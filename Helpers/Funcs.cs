@@ -5,28 +5,21 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace AdventOfCode.Functions
+namespace AdventOfCode.Helpers
 {
-    public static class DumpArray
-    {
-        static void dumpXYBoard(this int[,] board)
-        {
-            for (int y = 0; y < board.GetLength(1); y++)
-            {
-                for (int x = 0; x < board.GetLength(0); x++)
-                {
-                    Console.Write(board[x, y] + " ");
-                }
-                Console.WriteLine();
-            }
-            Console.WriteLine();
-        }
-    }
 
 public static class Functions
     {
         #region Methods
-
+        public static IEnumerable<int> Range(int start, int stop)
+        {
+            if (start > stop)
+                for (int i = start; i >= stop; i--)
+                    yield return i;
+            else 
+                for (int i = start; i <= stop; i++)
+                    yield return i;
+        }
         public static TValue GetOrAdd<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key, Func<TValue> create)
         {
             if (!dict.ContainsKey(key))
@@ -43,6 +36,13 @@ public static class Functions
             return (null, null);
         }
 
+        /// <summary>
+        /// finds two values that add up to a target value
+        /// </summary>
+        /// <param name="arr"></param>
+        /// <param name="target"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
         public static (List<int> indeces, List<long> values) FindSum(this IList<long> arr, long target, int count = 2)
         {
             foreach (var t in arr.Combinations(count))
@@ -98,6 +98,12 @@ public static class Functions
                 yield return inc;
         }
 
+        /// <summary>
+        /// returns all the combinations of count values  eg [1,2,3] and 2 would yield 1,2|1,3|2,3
+        /// </summary>
+        /// <param name="arr"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
         public static IEnumerable<List<int>> Combinations(this IList<long> arr, int count = 2)
         {
             var indeces = Enumerable.Range(0, count).ToList();
