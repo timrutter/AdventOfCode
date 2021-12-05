@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AdventOfCode.Helpers;
 
@@ -17,16 +18,15 @@ namespace AdventOfCode.Advent2020
         }
         private static List<string> Evaluate(int rule, IReadOnlyDictionary<int, string> rules)
         {
-            // var r = rules[rule];
-            // if (r.StartsWith("\""))
-            //     return new List<string> {$"{r.RemoveQuotes()}"};
-            // return r.Split('|').SelectMany(bit => bit.Trim()
-            //         .SplitToType<int>(" ")
-            //         .Select(i => Evaluate(i, rules))
-            //         .Aggregate(new List<string>(),
-            //             (current, l) => current.Count == 0 ? l : Append(current.ToList(), l)))
-            //     .ToList();
-            return null;
+             var r = rules[rule];
+             if (r.StartsWith("\""))
+                 return new List<string> {$"{r.RemoveQuotes()}"};
+             return r.Split('|').SelectMany(bit => bit.Trim()
+                     .SplitToType<int>(" ")
+                     .Select(i => Evaluate(i, rules))
+                     .Aggregate(new List<string>(),
+                         (current, l) => current.Count == 0 ? l : Append(current.ToList(), l)))
+                 .ToList();
         }
 
         public override object ExecutePart1()
@@ -34,7 +34,7 @@ namespace AdventOfCode.Advent2020
             return -1;
             var rules = DataFile.ReadAllKeyValuePairs<int, string>(": ")
                 .ToDictionary(d => d.key, d => d.value);
-            var strings = "Year2020\\Data\\Day19a.txt".ReadAll<string>().ToList();
+            var strings = "Advent2020\\Data\\Day19a.txt".ReadAll<string>().ToList();
 
             return strings.Count(s => Evaluate(0, rules).Contains(s));
         }
@@ -44,7 +44,7 @@ namespace AdventOfCode.Advent2020
             return -1;
             var rules = DataFile.ReadAllKeyValuePairs<int, string>(": ")
                 .ToDictionary(d => d.key, d => d.value);
-            var strings = "Year2020\\Data\\Day19a.txt".ReadAll<string>().ToList();
+            var strings = "Advent2020\\Data\\Day19a.txt".ReadAll<string>().ToList();
 
             var ret42 = Evaluate(42, rules);
             var ret31 = Evaluate(31, rules);

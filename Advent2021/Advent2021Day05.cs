@@ -7,71 +7,73 @@ namespace AdventOfCode.Advent2021
 {
     public class Advent2021Day05 : Solution
     {
+        private Board<int> _board;
+        private List<List<int>> _vents;
+        private int _xMax;
+        private int _yMax;
+
         public Advent2021Day05()
         {
             Answer1 = 6267;
             Answer2 = 20196;
+            ReadData();
         }
 
-        public override object ExecutePart1()
+        private void ReadData()
         {
             var strings = DataFile.ReadAllKeyValuePairs<string, string>(" -> ");
-            var vents = strings.Select(s => s.key.SplitToType<int>(",").Concat(s.value.SplitToType<int>(",")).ToList()).ToList();
-            var xMax = vents.SelectMany(v => new[] {v[0], v[2]}).Max();
-            var yMax = vents.SelectMany(v => new[] { v[1], v[3] }).Max();
-            var board = new Board<int>(xMax + 1, yMax + 1);
-            foreach (var vent in vents)
-            {
-                if (vent[0] == vent[2] || vent[1] == vent[3])
-                {
-                    PlotLine(vent, board);
-                } 
-            }
-
-            return board.Count(v => v > 1);
+            _vents = strings.Select(s => s.key.SplitToType<int>(",").Concat(s.value.SplitToType<int>(",")).ToList()).ToList();
+            _xMax = _vents.SelectMany(v => new[] { v[0], v[2] }).Max();
+            _yMax = _vents.SelectMany(v => new[] { v[1], v[3] }).Max();
         }
-        
         private static void PlotLine(List<int> vent, Board<int> board)
         {
             var xs = Functions.Range(vent[0], vent[2]).ToList();
             var ys = Functions.Range(vent[1], vent[3]).ToList();
             if (xs.Count == 1)
             {
-                foreach(var y in ys)
+                foreach (var y in ys)
                 {
-                    board.SetValueAt(xs[0], y, board.ValueAt(xs[0], y) + 1);
+                    board[xs[0], y]++;
                 }
-            } 
+            }
             else if (ys.Count == 1)
             {
-                foreach(var x in xs)
+                foreach (var x in xs)
                 {
-                    board.SetValueAt(x, ys[0], board.ValueAt(x, ys[0]) + 1);
+                    board[x, ys[0]]++;
                 }
             }
             else
             {
 
-                for (var i = 0; i < xs.Count; i++)
+                for (var i = 0; i < Math.Max(xs.Count, ys.Count); i++)
                 {
-                    board.SetValueAt(xs[i], ys[i], board.ValueAt(xs[i], ys[i]) + 1);
+                    board[xs[i], ys[i]]++;
                 }
             }
         }
 
-        public override object ExecutePart2()
+        public override object ExecutePart1()
         {
-            var strings = DataFile.ReadAllKeyValuePairs<string, string>(" -> ");
-            var vents = strings.Select(s => s.key.SplitToType<int>(",").Concat(s.value.SplitToType<int>(",")).ToList()).ToList();
-            var xMax = vents.SelectMany(v => new[] { v[0], v[2] }).Max();
-            var yMax = vents.SelectMany(v => new[] { v[1], v[3] }).Max();
-            var board = new Board<int>(xMax + 1, yMax + 1);
-            foreach (var vent in vents)
+            _board = new Board<int>(_xMax + 1, _yMax + 1);
+            foreach (var vent in _vents.Where(vent => vent[0] == vent[2] || vent[1] == vent[3]))
             {
-                PlotLine(vent, board);
+                PlotLine(vent, _board);
             }
 
-            return board.Count(v => v > 1);
+            return _board.Count(v => v > 1);
+        }
+
+        public override object ExecutePart2()
+        {
+            _board = new Board<int>(_xMax + 1, _yMax + 1);
+            foreach (var vent in _vents)
+            {
+                PlotLine(vent, _board);
+            }
+
+            return _board.Count(v => v > 1);
         }
     }
 }

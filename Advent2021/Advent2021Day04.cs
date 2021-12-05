@@ -28,8 +28,8 @@ namespace AdventOfCode.Advent2021
             var boards = new List<Board<int>>();
             for (int i = 1; i < origStrings.Count; i += 6)
             {
-                boards.Add(new Board<int>(5, 5, int.MaxValue));
-                boards[i / 6] = origStrings.Skip(i + 1).Take(5).LoadBoard(" ", int.MaxValue);
+                boards.Add(new Board<int>(5, 5));
+                boards[i / 6] = origStrings.Skip(i + 1).Take(5).LoadBoard<int>(" ");
             }
 
             return boards;

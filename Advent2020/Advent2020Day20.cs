@@ -128,7 +128,7 @@ namespace AdventOfCode.Advent2020
                             }
                     }
 
-                    Console.WriteLine(ret.Count);
+                    //Console.WriteLine(ret.Count);
                     if (x + 1 == size)
                     {
                         x = 0;
@@ -153,34 +153,34 @@ namespace AdventOfCode.Advent2020
                 return ret;
             }).ToList(), 1, 0);
 
-            var first = arrayOptions[0];
-            for (var y = 0; y < first.GetLength(1) * 10; y++)
-            {
-                for (var x = 0; x < first.GetLength(0) * 10; x++)
+            //var first = arrayOptions[0];
+            //for (var y = 0; y < first.GetLength(1) * 10; y++)
+            //{
+                //for (var x = 0; x < first.GetLength(0) * 10; x++)
 
-                {
-                    var board = first[x / 10, y / 10].Board.FlipY();
+                //{
+                    //var board = first[x / 10, y / 10].Board.FlipY();
 
-                    Console.Write(board.ValueAt(x % 10, y % 10));
-                    if (x % 10 == 9)
-                        Console.Write(" ");
-                }
+                    //Console.Write(board[x % 10, y % 10]);
+                    //if (x % 10 == 9)
+                        //Console.Write(" ");
+                //}
 
-                Console.WriteLine();
-                if (y % 10 == 9)
-                    Console.WriteLine();
-            }
+                //Console.WriteLine();
+                //if (y % 10 == 9)
+                    //Console.WriteLine();
+            //}
 
-            for (var y = 0; y < first.GetLength(1); y++)
-            {
-                for (var x = 0; x < first.GetLength(0); x++)
-                {
-                    Console.Write(first[x, y].ID);
-                    Console.Write(" ");
-                }
+            //for (var y = 0; y < first.GetLength(1); y++)
+            //{
+                //for (var x = 0; x < first.GetLength(0); x++)
+                //{
+                    //Console.Write(first[x, y].ID);
+                    //Console.Write(" ");
+                //}
 
-                Console.WriteLine();
-            }
+                //Console.WriteLine();
+            //}
 
             var num =
                 long.Parse(arrayOptions[0][0, 0].ID.Substring(5, 4)) *
@@ -194,7 +194,7 @@ namespace AdventOfCode.Advent2020
         {
             var strings = "Advent2020\\Data\\Day20a.txt".ReadAll<string>();
             var size = 12;
-            var boardStart = new Board<char>(size * 8, size * 8, char.MaxValue);
+            var boardStart = new Board<char>(size * 8, size * 8);
             var x2 = 0;
             var y2 = 0;
             for (var y = 0; y < strings.Length; y++)
@@ -203,7 +203,7 @@ namespace AdventOfCode.Advent2020
                 for (var x = 0; x < strings[0].Length; x++)
                 {
                     if (x % 10 == 0 || x % 10 == 9) continue;
-                    boardStart.SetValueAt(x2, y2, strings[y][x]);
+                    boardStart[x2, y2] = strings[y][x];
                     x2++;
                 }
 
@@ -211,7 +211,7 @@ namespace AdventOfCode.Advent2020
                 x2 = 0;
             }
 
-            boardStart.Dump();
+            //boardStart.Dump();
             var boards = GetAllBoards(boardStart);
 
             var pattern = new List<string>
@@ -235,7 +235,7 @@ namespace AdventOfCode.Advent2020
                             for (var xP = 0; xP < pattern[0].Length; xP++)
                             {
                                 if (pattern[yP][xP] != '#') continue;
-                                if (board.ValueAt(x + xP, y + yP) != '#')
+                                if (board[x + xP, y + yP] != '#')
                                     match = false;
                             }
 
@@ -246,7 +246,7 @@ namespace AdventOfCode.Advent2020
                                 for (var xP = 0; xP < pattern[0].Length; xP++)
                                 {
                                     if (pattern[yP][xP] != '#') continue;
-                                    board.SetValueAt(x + xP, y + yP, 'O');
+                                    board[x + xP, y + yP] = 'O';
                                 }
 
                         }
@@ -267,7 +267,7 @@ namespace AdventOfCode.Advent2020
             {
                 for (var y = 0; y < size * 8; y++)
                 {
-                    if (boardWithMonsters?.ValueAt(x, y) == '#')
+                    if (boardWithMonsters?[x, y] == '#')
                         countRough++;
                 }
 

@@ -10,21 +10,21 @@ namespace AdventOfCode.Helpers
         public static Board<char> LoadCharBoard(this IEnumerable<string> strings)
         {
             var ss = strings.ToList();
-            var board = new Board<char>(ss.Count, ss.First().Length, char.MaxValue);
+            var board = new Board<char>(ss.Count, ss.First().Length);
             for (int y = 0; y < ss.Count; y++)
             for (int x = 0; x < ss[y].Length; x++)
-                board.SetValueAt(x, y,ss[y][x]);
+                board[x,y] = ss[y][x];
             return board;
         }
-        public static Board<T> LoadBoard<T>(this IEnumerable<string> strings,string splitChar, T def) where T : struct
+        public static Board<T> LoadBoard<T>(this IEnumerable<string> strings,string splitChar) where T : struct
         {
             var ss = strings.ToList();
-            var board = new Board<T>(ss.Count, ss.First().Split(splitChar).Length, def);
+            var board = new Board<T>(ss.Count, ss.First().Split(splitChar).Length);
             for (int y = 0; y < ss.Count; y++)
             {
                 var bits = ss[y].Split(splitChar);
                 for (int x = 0; x < bits.Length; x++)
-                    board.SetValueAt(x, y, (T) Convert.ChangeType(bits[x], typeof(T)));
+                    board[x, y] = (T) Convert.ChangeType(bits[x], typeof(T));
             }
 
             return board;
@@ -160,16 +160,14 @@ namespace AdventOfCode.Helpers
         #region Fields
 
         private T[,] _board;
-        private T _def;
 
         #endregion
 
         #region Constructors
 
-        public Board(int width, int height, T def = default(T))
+        public Board(int width, int height)
         {
             _board = new T[width, height];
-            _def = def;
         }
 
         public Board(Board<T> from)
@@ -214,12 +212,22 @@ namespace AdventOfCode.Helpers
             }
         }
 
+        public T this[int x, int y]
+        {
+            get => ValueAt(x, y);
+            set => SetValueAt(x, y, value);
+        }
+
         public int Width => _board.GetLength(0);
         public int Height => _board.GetLength(1);
 
         public T Value
         {
-            get => XInRange(X) && YInRange(Y) ? _board[X, Y] : _def;
+            get
+            {
+                if (XInRange(X) && YInRange(Y)) return _board[X, Y];
+                return default(T);
+            }
             set
             {
                 if (!XInRange(X) || !YInRange(Y)) return ;
@@ -274,7 +282,7 @@ namespace AdventOfCode.Helpers
         {
             if (XInRange(x) && YInRange(y))
                 return _board[x, y];
-            return _def;
+            throw new Exception("invalid index");
         }
 
         public bool SetValueAt(int x, int y, T ch)
@@ -454,7 +462,7 @@ namespace AdventOfCode.Helpers
 
         public Board<T> RotateACW()
         {
-            var b = new Board<T>(Height, Width, _def);
+            var b = new Board<T>(Height, Width);
             var x2 = 0;
             
             for (int y = 0; y < Height; y++)
@@ -474,7 +482,7 @@ namespace AdventOfCode.Helpers
         }
         public Board<T> FlipX()
         {
-            var b = new Board<T>(Width,Height, _def);
+            var b = new Board<T>(Width,Height);
 
             for (int y = 0; y < Height; y++)
             {
@@ -490,7 +498,7 @@ namespace AdventOfCode.Helpers
         }
         public Board<T> FlipY()
         {
-            var b = new Board<T>(Width,Height,_def);
+            var b = new Board<T>(Width,Height);
             for (int x = 0; x < Width; x++)
             {
                 var y2 = 0;

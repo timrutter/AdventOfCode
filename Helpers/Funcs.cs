@@ -285,7 +285,7 @@ public static class Functions
         public static Board<char> ReadBoard(this string filename)
         {
             var read = File.ReadAllLines(filename);
-            var board = new Board<char>(read[0].Length, read.Length, char.MaxValue);
+            var board = new Board<char>(read[0].Length, read.Length);
             for (var y = 0; y < read.Length; y++)
             {
                 var s = read[y];

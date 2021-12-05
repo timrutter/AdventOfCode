@@ -9,7 +9,7 @@
         }
         public override object ExecutePart1()
         {
-            return int.MaxValue;
+            return -1;
         }
 
         public override object ExecutePart2()

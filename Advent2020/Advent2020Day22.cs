@@ -8,8 +8,8 @@ namespace AdventOfCode.Advent2020
     {
         public Advent2020Day22()
         {
-            Answer1 = 33559;
-            Answer2 = 32789;
+            Answer1 = (long)33559;
+            Answer2 = (long)32789;
         }
         private static List<int> _primes = new List<int>
         {
@@ -95,39 +95,39 @@ namespace AdventOfCode.Advent2020
 
         }
         public override object ExecutePart1()
-        {// var strings = DataFile.ReadAll<string>();
-            // var player1Cards = strings.Skip(1).TakeWhile(s => !string.IsNullOrWhiteSpace(s)).ReadAll<int>().ToList();
-            // var player2Cards = strings.Skip(3 + player1Cards.Count()).ReadAll<int>().ToList();
-            //
-            // while (player1Cards.Count() > 0 && player2Cards.Count() > 0)
-            // {
-            //     if (player1Cards[0] > player2Cards[0])
-            //     {
-            //         player1Cards.Add(player1Cards[0]);
-            //         player1Cards.Add(player2Cards[0]);
-            //     }
-            //     else 
-            //     {
-            //         player2Cards.Add(player2Cards[0]);
-            //         player2Cards.Add(player1Cards[0]);
-            //     }
-            //     player1Cards.RemoveAt(0);
-            //     player2Cards.RemoveAt(0);
-            // }
-            //
-            // long score = 0;
-            // if (player1Cards.Count > 0)
-            //     for (int i = player1Cards.Count - 1; i >= 0; i--)
-            //     {
-            //         score += player1Cards[i] * (player1Cards.Count - i);
-            //     }
-            // else 
-            //     for (int i = player2Cards.Count - 1; i >= 0; i--)
-            //     {
-            //         score += player2Cards[i] * (player2Cards.Count - i);
-            //     }
-            // return score;
-            return -1;
+        {
+             var strings = DataFile.ReadAll<string>();
+             var player1Cards = strings.Skip(1).TakeWhile(s => !string.IsNullOrWhiteSpace(s)).ReadAll<int>().ToList();
+             var player2Cards = strings.Skip(3 + player1Cards.Count()).ReadAll<int>().ToList();
+            
+             while (player1Cards.Count > 0 && player2Cards.Any())
+             {
+                 if (player1Cards[0] > player2Cards[0])
+                 {
+                     player1Cards.Add(player1Cards[0]);
+                     player1Cards.Add(player2Cards[0]);
+                 }
+                 else 
+                 {
+                     player2Cards.Add(player2Cards[0]);
+                     player2Cards.Add(player1Cards[0]);
+                 }
+                 player1Cards.RemoveAt(0);
+                 player2Cards.RemoveAt(0);
+             }
+            
+             long score = 0;
+             if (player1Cards.Count > 0)
+                 for (int i = player1Cards.Count - 1; i >= 0; i--)
+                 {
+                     score += player1Cards[i] * (player1Cards.Count - i);
+                 }
+             else 
+                 for (int i = player2Cards.Count - 1; i >= 0; i--)
+                 {
+                     score += player2Cards[i] * (player2Cards.Count - i);
+                 }
+             return score;
         }
 
         public override object ExecutePart2()

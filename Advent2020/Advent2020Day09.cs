@@ -7,8 +7,8 @@ namespace AdventOfCode.Advent2020
     {
         public Advent2020Day09()
         {
-            Answer1 = 1309761972;
-            Answer2 = 177989832;
+            Answer1 = (long)1309761972;
+            Answer2 = (long)177989832;
         }
         public override object ExecutePart1()
         {

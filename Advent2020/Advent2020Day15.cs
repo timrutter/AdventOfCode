@@ -15,7 +15,7 @@ namespace AdventOfCode.Advent2020
             var input = new List<int> { 6, 4, 12, 1, 20, 0, 16 };
 
             var spoken = new List<int>();
-            for (var i = 0; i < 50; i++)
+            for (var i = 0; i < 2020; i++)
             {
                 if (i < input.Count)
                 {
@@ -30,7 +30,7 @@ namespace AdventOfCode.Advent2020
                     spoken.Add(i - (ind + 1));
             }
 
-            return spoken[49];
+            return spoken[2019];
         }
 
         public override object ExecutePart2()
