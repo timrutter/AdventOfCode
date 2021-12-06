@@ -15,16 +15,12 @@ namespace AdventOfCode
             var cons = "";
             while (cons != "q")
             {
-                //Execute(typeof(Advent2015));
-                // Execute(typeof(Advent2016));
-                // Execute(typeof(Advent2017));
-                // Execute(typeof(Advent2018));
-                //Execute(typeof(Advent2019));
+                //Execute(new Advent2015.Advent2015(), GetDays(DayMode.All));
+                Execute(new Advent2019.Advent2019(), GetDays(DayMode.All));
                 //Execute(new Advent2020.Advent2020(), GetDays(DayMode.Day, 
                 //    new List<int>{ 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,21,22,23,24,25}));
 
-                Execute(new Advent2021.Advent2021(), GetDays(DayMode.Today));
-
+                //Execute(new Advent2021.Advent2021(), GetDays(DayMode.Today));
 
                 cons = Console.ReadLine();
             }
@@ -49,13 +45,13 @@ namespace AdventOfCode
         {
             switch (answer)
             {
-                case int l when l != int.MaxValue:
+                case int l when l != int.MaxValue || expected != null:
                     Console.Write($"{day}.{part} {l} {sw.ElapsedMilliseconds}ms");
                     break;
-                case long l when l != long.MaxValue:
+                case long l when l != long.MaxValue || expected != null:
                     Console.Write($"{day}.{part} {l} {sw.ElapsedMilliseconds}ms");
                     break;
-                case ushort l when l != ushort.MaxValue:
+                case ushort l when l != ushort.MaxValue || expected != null:
                     Console.Write($"{day}.{part} {l} {sw.ElapsedMilliseconds}ms");
                     break;
                 case string s:

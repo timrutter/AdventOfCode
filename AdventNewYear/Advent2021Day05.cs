@@ -1,8 +1,13 @@
-﻿namespace AdventOfCode.AdventNewYear
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using AdventOfCode.Helpers;
+
+namespace AdventOfCode.AdventNewYear
 {
-    public class Advent2021Day05 : Solution
+    public class AdventNewYearDay05 : Solution
     {
-        public Advent2021Day05()
+        public AdventNewYearDay05()
         {
             Answer1 = null;
             Answer2 = null;

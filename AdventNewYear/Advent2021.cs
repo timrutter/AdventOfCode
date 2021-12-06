@@ -2,37 +2,37 @@
 
 namespace AdventOfCode.AdventNewYear
 {
-    public class Advent2021 : Solutions
+    public class AdventNewYear : Solutions
     {
         public List<Solution> Solutions { get; } = new List<Solution>();
 
-        public Advent2021()
+        public AdventNewYear()
         {
-            Solutions.Add(new Advent2021Day01());
-            Solutions.Add(new Advent2021Day02());
-            Solutions.Add(new Advent2021Day03());
-            Solutions.Add(new Advent2021Day04());
-            Solutions.Add(new Advent2021Day05());
-            Solutions.Add(new Advent2021Day06());
-            Solutions.Add(new Advent2021Day07());
-            Solutions.Add(new Advent2021Day08());
-            Solutions.Add(new Advent2021Day09());
-            Solutions.Add(new Advent2021Day10());
-            Solutions.Add(new Advent2021Day11());
-            Solutions.Add(new Advent2021Day12());
-            Solutions.Add(new Advent2021Day13());
-            Solutions.Add(new Advent2021Day14());
-            Solutions.Add(new Advent2021Day15());
-            Solutions.Add(new Advent2021Day16());
-            Solutions.Add(new Advent2021Day17());
-            Solutions.Add(new Advent2021Day18());
-            Solutions.Add(new Advent2021Day19());
-            Solutions.Add(new Advent2021Day20());
-            Solutions.Add(new Advent2021Day21());
-            Solutions.Add(new Advent2021Day22());
-            Solutions.Add(new Advent2021Day23());
-            Solutions.Add(new Advent2021Day24());
-            Solutions.Add(new Advent2021Day25());
+            Solutions.Add(new AdventNewYearDay01());
+            Solutions.Add(new AdventNewYearDay02());
+            Solutions.Add(new AdventNewYearDay03());
+            Solutions.Add(new AdventNewYearDay04());
+            Solutions.Add(new AdventNewYearDay05());
+            Solutions.Add(new AdventNewYearDay06());
+            Solutions.Add(new AdventNewYearDay07());
+            Solutions.Add(new AdventNewYearDay08());
+            Solutions.Add(new AdventNewYearDay09());
+            Solutions.Add(new AdventNewYearDay10());
+            Solutions.Add(new AdventNewYearDay11());
+            Solutions.Add(new AdventNewYearDay12());
+            Solutions.Add(new AdventNewYearDay13());
+            Solutions.Add(new AdventNewYearDay14());
+            Solutions.Add(new AdventNewYearDay15());
+            Solutions.Add(new AdventNewYearDay16());
+            Solutions.Add(new AdventNewYearDay17());
+            Solutions.Add(new AdventNewYearDay18());
+            Solutions.Add(new AdventNewYearDay19());
+            Solutions.Add(new AdventNewYearDay20());
+            Solutions.Add(new AdventNewYearDay21());
+            Solutions.Add(new AdventNewYearDay22());
+            Solutions.Add(new AdventNewYearDay23());
+            Solutions.Add(new AdventNewYearDay24());
+            Solutions.Add(new AdventNewYearDay25());
         }
     }
 }

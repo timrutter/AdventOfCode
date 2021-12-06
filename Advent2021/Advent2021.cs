@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-
 namespace AdventOfCode.Advent2021
 {
     public class Advent2021 : Solutions

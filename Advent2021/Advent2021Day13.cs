@@ -1,4 +1,5 @@
-﻿namespace AdventOfCode.Advent2021
+﻿using AdventOfCode.Helpers; 
+namespace AdventOfCode.Advent2021
 {
     public class Advent2021Day13 : Solution
     {
