@@ -1,25 +1,55 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Microsoft.VisualBasic.CompilerServices;
 
 namespace AdventOfCode.Helpers
 {
     public static class BoardExtensions
     {
-        public static Board<char> LoadCharBoard(this IEnumerable<string> strings)
+        public static (int x, int y) Above(this (int x, int y) pos, int distance = 1)
+        {
+            return (pos.x, pos.y - distance);
+        }
+        public static (int x, int y) Below(this (int x, int y) pos, int distance = 1)
+        {
+            return (pos.x, pos.y + distance);
+        }
+        public static (int x, int y) Left(this (int x, int y) pos, int distance = 1)
+        {
+            return (pos.x - distance, pos.y);
+        }
+        public static (int x, int y) Right(this (int x, int y) pos, int distance = 1)
+        {
+            return (pos.x + distance, pos.y);
+        }
+        public static Board<T> LoadBoard<T>(this string fileName) where T : struct
+        {
+            return File.ReadAllLines(fileName).LoadBoard<T>();
+        }
+        public static Board<T> LoadBoard<T>(this IEnumerable<string> strings) where T : struct
         {
             var ss = strings.ToList();
-            var board = new Board<char>(ss.Count, ss.First().Length);
+            var board = new Board<T>(ss.First().Length,ss.Count );
             for (int y = 0; y < ss.Count; y++)
             for (int x = 0; x < ss[y].Length; x++)
-                board[x,y] = ss[y][x];
+            {
+                board[x,y] = (T)Convert.ChangeType(ss[y][x].ToString(), typeof(T));
+            }
             return board;
         }
-        public static Board<T> LoadBoard<T>(this IEnumerable<string> strings,string splitChar) where T : struct
+
+        public static Board<T> LoadBoard<T>(this string fileName, string splitChar, StringSplitOptions options = StringSplitOptions.None) where T : struct
+        {
+            return File.ReadAllLines(fileName).LoadBoard<T>(splitChar, options);
+        }
+
+        public static Board<T> LoadBoard<T>(this IEnumerable<string> strings,string splitChar, StringSplitOptions options = StringSplitOptions.None) where T : struct
         {
             var ss = strings.ToList();
-            var board = new Board<T>(ss.Count, ss.First().Split(splitChar).Length);
+            var board = new Board<T>(ss.Count, ss.First().Split(splitChar, options).Length);
             for (int y = 0; y < ss.Count; y++)
             {
                 var bits = ss[y].Split(splitChar);
@@ -200,6 +230,15 @@ namespace AdventOfCode.Helpers
                 }
             }
         }
+
+        public void SetValues(IEnumerable<T> values)
+        {
+            var l = values.ToList();
+            for (int i = 0; i < l.Count; i++)
+            {
+                SetValueAt(i % Width,  i / Height , l[i]);
+            }
+        }
         public IEnumerable<T> Values
         {
             get
@@ -282,7 +321,36 @@ namespace AdventOfCode.Helpers
         {
             if (XInRange(x) && YInRange(y))
                 return _board[x, y];
-            throw new Exception("invalid index");
+            return default(T);
+        }
+
+
+        public T ValueAt((int x, int y) pos)
+        {
+            if (XInRange(pos.x) && YInRange(pos.y))
+                return _board[pos.x, pos.y];
+            return default;
+        }
+
+        public bool TryGetValueAt(int x, int y, out T val)
+        {
+            if (!XInRange(x) || !YInRange(y))
+            {
+                val = default;
+                return false;
+            }
+            val = _board[x, y];
+            return true;
+        }
+        public bool TryGetValueAt((int x, int y) pos, out T val)
+        {
+            if (!XInRange(pos.x) || !YInRange(pos.y))
+            {
+                val = default;
+                return false;
+            }
+            val = _board[pos.x, pos.y];
+            return true;
         }
 
         public bool SetValueAt(int x, int y, T ch)
@@ -570,5 +638,7 @@ namespace AdventOfCode.Helpers
         {
             return Values.Count(func);
         }
+
+        public bool PositionIsValid => XInRange(X) && YInRange(Y);
     }
 }

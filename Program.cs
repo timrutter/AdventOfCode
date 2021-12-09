@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace AdventOfCode
 {
-    internal class Program
+    internal static class Program
     {
         #region Methods
 
@@ -16,11 +16,12 @@ namespace AdventOfCode
             while (cons != "q")
             {
                 //Execute(new Advent2015.Advent2015(), GetDays(DayMode.All));
-                Execute(new Advent2019.Advent2019(), GetDays(DayMode.All));
+                //Execute(new Advent2016.Advent2016(), GetDays(DayMode.All));
+                //Execute(new Advent2019.Advent2019(), GetDays(DayMode.All));
                 //Execute(new Advent2020.Advent2020(), GetDays(DayMode.Day, 
-                //    new List<int>{ 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,21,22,23,24,25}));
+                //    new List<int>{ 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25}));
 
-                //Execute(new Advent2021.Advent2021(), GetDays(DayMode.Today));
+                Execute(new Advent2021.Advent2021(), GetDays(DayMode.Today));
 
                 cons = Console.ReadLine();
             }

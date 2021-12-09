@@ -77,7 +77,7 @@ namespace AdventOfCode.Advent2020
             {
                 var s = strings[i];
                 i++;
-                var b = strings.Skip(i).Take(10).LoadCharBoard();
+                var b = strings.Skip(i).Take(10).LoadBoard<char>();
                 i += 10;
                 dict.Add(s, b);
             }

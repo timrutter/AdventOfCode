@@ -11,6 +11,27 @@ namespace AdventOfCode.Helpers
 public static class Functions
     {
         #region Methods
+
+        public static IEnumerable<List<T>> TakeBlocks<T>(this IEnumerable<T> arr, int count)
+        {
+            int i = 0;
+            var list = new List<T>();
+            foreach (var obj in arr)
+            {
+                list.Add(obj);
+                if (list.Count == count)
+                {
+                    yield return list;
+                    list = new List<T>();
+                }
+
+                i++;
+            }
+        }
+        public static int Mod(int x, int m)
+        {
+            return (x % m + m) % m;
+        }
         public static IEnumerable<int> Range(int start, int stop)
         {
             if (start > stop)
@@ -251,6 +272,10 @@ public static class Functions
     {
         #region Methods
 
+        public static IEnumerable<T> SplitFileToType<T>(this string fileName, string separator)
+        {
+            return File.ReadAllText(fileName).SplitToType<T>(separator);
+        }
         public static string RemoveQuotes(this string s)
         {
             return s.TrimStart('\"').TrimEnd('\"');
@@ -261,9 +286,9 @@ public static class Functions
             return strs.Where(s => !string.IsNullOrWhiteSpace(s));
         }
 
-        public static IEnumerable<T> SplitToType<T>(this string str, string separator = "x")
+        public static IEnumerable<T> SplitToType<T>(this string str, string separator = "x", StringSplitOptions options = StringSplitOptions.None)
         {
-            var bits = str.Split(separator);
+            var bits = str.Split(separator, options);
             return bits.Select(b => (T) Convert.ChangeType(b, typeof(T)));
         }
 
@@ -299,6 +324,23 @@ public static class Functions
 
             return board;
         }
+        public static Board<T> ReadBoard<T>(this string filename, string separator, StringSplitOptions options) where T : struct
+        {
+            var read = filename.ReadAllSplitToType<T>(separator, options);
+            var board = new Board<T>(read[0].Count, read.Count);
+            for (var y = 0; y < read.Count; y++)
+            {
+                var s = read[y];
+                for (var x = 0; x < s.Count && x < board.Width; x++)
+                {
+                    var v = read[y][x];
+                    board.SetValueAt(x, y, v);
+                }
+
+            }
+
+            return board;
+        }
         /// <summary>
         ///     key: value
         ///     key: value
@@ -318,6 +360,11 @@ public static class Functions
             }
         }
 
+        public static List<List<T>> ReadAllSplitToType<T>(this string fileName, string separator,
+            StringSplitOptions options = StringSplitOptions.None)
+        {
+            return File.ReadAllLines(fileName).Select(l => l.SplitToType<T>(separator, options).ToList()).ToList();
+        }
         public static IEnumerable<(T1 key, T2 value)> ReadAllKeyValuePairs<T1, T2>(this string fileName,
             string separator = ":")
         {
