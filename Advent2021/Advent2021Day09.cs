@@ -14,13 +14,13 @@ namespace AdventOfCode.Advent2021
             Answer2 = 847044;
             _board = DataFile.LoadBoard<int>();
             _lowPoints = _board.Positions.Where(p => (!_board.TryGetValueAt(p.Above(), out var val) ||
-                                                      val > _board.ValueAt(p.x, p.y)) &&
+                                                      val > _board.ValueAt(p)) &&
                                                      (!_board.TryGetValueAt(p.Below(), out val) ||
-                                                      val > _board.ValueAt(p.x, p.y)) &&
+                                                      val > _board.ValueAt(p)) &&
                                                      (!_board.TryGetValueAt(p.Left(), out val) ||
-                                                      val > _board.ValueAt(p.x, p.y)) &&
+                                                      val > _board.ValueAt(p)) &&
                                                      (!_board.TryGetValueAt(p.Right(), out val) ||
-                                                      val > _board.ValueAt(p.x, p.y)));
+                                                      val > _board.ValueAt(p)));
         }
         
         public override object ExecutePart1()
