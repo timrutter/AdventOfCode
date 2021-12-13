@@ -6,7 +6,7 @@ namespace AdventOfCode.Advent2021
     public class Advent2021Day09 : Solution
     {
         private readonly Board<int> _board;
-        private readonly IEnumerable<(int x, int y)> _lowPoints;
+        private readonly IEnumerable<Point> _lowPoints;
 
         public Advent2021Day09()
         {
@@ -25,14 +25,14 @@ namespace AdventOfCode.Advent2021
         
         public override object ExecutePart1()
         { 
-            return _lowPoints.Sum(p => _board.ValueAt(p.x, p.y) + 1);
+            return _lowPoints.Sum(p => _board.ValueAt(p.X, p.Y) + 1);
         }
 
         public override object ExecutePart2()
         {
             var basin = _lowPoints.Select(pos =>
             {
-                var basin = new List<(int x, int y)>();
+                var basin = new List<Point>();
                 FindBasin(_board, pos, basin);
                 return basin.Count;
             }).ToList();
@@ -41,7 +41,7 @@ namespace AdventOfCode.Advent2021
             return basin[0] * basin[1] * basin[2];
         }
 
-        private static void FindBasin(Board<int> board, (int x, int y) p, List<(int x, int y)> positions)
+        private static void FindBasin(Board<int> board, Point p, List<Point> positions)
         {
             var newPoses = new []{p.Above(), p.Below(), p.Left(), p.Right()};
             foreach (var newPos in newPoses)

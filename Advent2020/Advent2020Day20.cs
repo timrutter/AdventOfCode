@@ -87,9 +87,9 @@ namespace AdventOfCode.Advent2020
 
         private static List<Board<char>> GetAllBoards(Board<char> b)
         {
-            var ret = new List<Board<char>> { b, b.RotateACW() };
-            ret.Add(ret[1].RotateACW());
-            ret.Add(ret[2].RotateACW());
+            var ret = new List<Board<char>> { b, b.RotateAcw() };
+            ret.Add(ret[1].RotateAcw());
+            ret.Add(ret[2].RotateAcw());
             ret.Add(ret[0].FlipX());
             ret.Add(ret[0].FlipY());
             ret.Add(ret[1].FlipX());

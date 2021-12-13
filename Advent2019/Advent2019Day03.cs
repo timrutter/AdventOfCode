@@ -12,11 +12,11 @@ namespace AdventOfCode.Advent2019
             Answer1 = 865;
             Answer2 = 35038;
         }
-        private static Dictionary<(int x, int y), (int t1, int t2)> GetIntersects(List<(string, int)> p1, List<(string, int)> p2)
+        private static Dictionary<Point, (int t1, int t2)> GetIntersects(List<(string, int)> p1, List<(string, int)> p2)
         {
 
-            var path1 = new Dictionary<(int x, int y), int>();
-            var current = (0, 0);
+            var path1 = new Dictionary<Point, int>();
+            var current = new Point(0, 0);
             var t = 0;
             foreach (var command in p1)
             {
@@ -26,7 +26,7 @@ namespace AdventOfCode.Advent2019
                         for (int i = 0; i < command.Item2; i++)
                         {
                             t++;
-                            current = (current.Item1 + 1, current.Item2);
+                            current = current.Right();
                             if (path1.ContainsKey(current)) continue;
                             path1.Add(current, t);
                         }
@@ -36,7 +36,7 @@ namespace AdventOfCode.Advent2019
                         for (int i = 0; i < command.Item2; i++)
                         {
                             t++;
-                            current = (current.Item1 - 1, current.Item2);
+                            current = current.Left();
                             if (path1.ContainsKey(current)) continue;
                             path1.Add(current, t);
                         }
@@ -46,7 +46,7 @@ namespace AdventOfCode.Advent2019
                         for (int i = 0; i < command.Item2; i++)
                         {
                             t++;
-                            current = (current.Item1, current.Item2 + 1);
+                            current = current.Below();
                             if (path1.ContainsKey(current)) continue;
                             path1.Add(current, t);
                         }
@@ -56,7 +56,7 @@ namespace AdventOfCode.Advent2019
                         for (int i = 0; i < command.Item2; i++)
                         {
                             t++;
-                            current = (current.Item1, current.Item2 - 1);
+                            current = current.Above();
                             if (path1.ContainsKey(current)) continue;
                             path1.Add(current, t);
                         }
@@ -64,9 +64,9 @@ namespace AdventOfCode.Advent2019
                         break;
                 }
             }
-            current = (0, 0);
+            current = new Point(0, 0);
             t = 0;
-            var intersects = new Dictionary<(int x, int y), (int t1, int t2)>();
+            var intersects = new Dictionary<Point, (int t1, int t2)>();
             foreach (var command in p2)
             {
                 switch (command.Item1)
@@ -75,7 +75,7 @@ namespace AdventOfCode.Advent2019
                         for (int i = 0; i < command.Item2; i++)
                         {
                             t++;
-                            current = (current.Item1 + 1, current.Item2);
+                            current = current.Right();
                             if (path1.ContainsKey(current))
                                 intersects.Add(current, (path1[current], t));
                         }
@@ -85,7 +85,7 @@ namespace AdventOfCode.Advent2019
                         for (int i = 0; i < command.Item2; i++)
                         {
                             t++;
-                            current = (current.Item1 - 1, current.Item2);
+                            current = current.Left();
                             if (path1.ContainsKey(current))
                                 intersects.Add(current, (path1[current], t));
                         }
@@ -95,7 +95,7 @@ namespace AdventOfCode.Advent2019
                         for (int i = 0; i < command.Item2; i++)
                         {
                             t++;
-                            current = (current.Item1, current.Item2 + 1);
+                            current = current.Below();
                             if (path1.ContainsKey(current))
                                 intersects.Add(current, (path1[current], t));
                         }
@@ -105,7 +105,7 @@ namespace AdventOfCode.Advent2019
                         for (int i = 0; i < command.Item2; i++)
                         {
                             t++;
-                            current = (current.Item1, current.Item2 - 1);
+                            current = current.Above();
                             if (path1.ContainsKey(current))
                                 intersects.Add(current, (path1[current], t));
                         }
@@ -127,7 +127,7 @@ namespace AdventOfCode.Advent2019
             var intersects = GetIntersects(p1, p2);
 
 
-            return intersects.Select(t => Math.Abs(t.Key.x) + Math.Abs(t.Key.y)).Min();
+            return intersects.Select(t => Math.Abs(t.Key.X) + Math.Abs(t.Key.Y)).Min();
         }
 
         public override object ExecutePart2()

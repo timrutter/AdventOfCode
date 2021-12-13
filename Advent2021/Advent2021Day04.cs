@@ -37,11 +37,7 @@ namespace AdventOfCode.Advent2021
 
         private static void CrossOutNumIfPresent(Board<int> board, int num)
         {
-            foreach (var _ in board.Traverse)
-            {
-                if (board.Value == num)
-                    board.Value = -1;
-            }
+            foreach ((var pos, int _) in board.ValuesAndPositions.Where(v => v.value == num)) board.SetValueAt(pos, -1);
         }
         public override object ExecutePart1()
         {

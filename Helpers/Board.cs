@@ -9,22 +9,6 @@ namespace AdventOfCode.Helpers
 {
     public static class BoardExtensions
     {
-        public static (int x, int y) Above(this (int x, int y) pos, int distance = 1)
-        {
-            return (pos.x, pos.y - distance);
-        }
-        public static (int x, int y) Below(this (int x, int y) pos, int distance = 1)
-        {
-            return (pos.x, pos.y + distance);
-        }
-        public static (int x, int y) Left(this (int x, int y) pos, int distance = 1)
-        {
-            return (pos.x - distance, pos.y);
-        }
-        public static (int x, int y) Right(this (int x, int y) pos, int distance = 1)
-        {
-            return (pos.x + distance, pos.y);
-        }
         public static Board<T> LoadBoard<T>(this string fileName) where T : struct
         {
             return File.ReadAllLines(fileName).LoadBoard<T>();
@@ -172,14 +156,14 @@ namespace AdventOfCode.Helpers
             return list;
               
         }
-        public static List<(int x, int y)> GetNeighbours(int xS, int yS)
+        public static List<Point> GetNeighbours(int xS, int yS)
         {
-            var list = new List<(int x, int y)>();
+            var list = new List<Point>();
             for (int x = xS -1 ; x <= xS+1; x++)
             for (int y = yS -1 ; y <= yS+1; y++)
             {
                 if (x != xS || y != yS)
-                    list.Add((x,y));
+                    list.Add(new Point(x,y));
             }
             return list;
               
@@ -195,9 +179,13 @@ namespace AdventOfCode.Helpers
 
         #region Constructors
 
-        public Board(int width, int height)
+        public Board(int width, int height, Func<Point, int, T> initFunc = null)
         {
             _board = new T[width, height];
+            if (initFunc == null) return;
+            int i = 0;
+            foreach (var boardPosition in Positions)
+                SetValueAt(boardPosition, initFunc(boardPosition, i++));
         }
 
         public Board(Board<T> from)
@@ -209,25 +197,13 @@ namespace AdventOfCode.Helpers
         #endregion
 
         #region Properties
-        public IEnumerable<( int x, int y)> Positions
+        public IEnumerable<Point> Positions
         {
             get
             {
                 for (var x = 0; x < Width; x++)
                 for (var y = 0; y < Height; y++)
-                    yield return ( x, y);
-            }
-        }
-        public IEnumerable<(int x, int y)> Traverse
-        {
-            get
-            {
-                for (var x = 0; x < Width; x++)
-                for (var y = 0; y < Height; y++)
-                {
-                    SetPosition(x,y);
-                    yield return (x, y);
-                }
+                    yield return new Point(x, y);
             }
         }
 
@@ -250,6 +226,17 @@ namespace AdventOfCode.Helpers
                 }
             }
         }
+        public IEnumerable<(Point pos, T value)> ValuesAndPositions
+        {
+            get
+            {
+                for (var x = 0; x < Width; x++)
+                for (var y = 0; y < Height; y++)
+                {
+                    yield return (new Point(x, y), value: ValueAt(x, y));
+                }
+            }
+        }
 
         public T this[int x, int y]
         {
@@ -265,7 +252,7 @@ namespace AdventOfCode.Helpers
             get
             {
                 if (XInRange(X) && YInRange(Y)) return _board[X, Y];
-                return default(T);
+                return default;
             }
             set
             {
@@ -321,14 +308,14 @@ namespace AdventOfCode.Helpers
         {
             if (XInRange(x) && YInRange(y))
                 return _board[x, y];
-            return default(T);
+            return default;
         }
 
 
-        public T ValueAt((int x, int y) pos)
+        public T ValueAt(Point pos)
         {
-            if (XInRange(pos.x) && YInRange(pos.y))
-                return _board[pos.x, pos.y];
+            if (XInRange(pos.X) && YInRange(pos.Y))
+                return _board[pos.X, pos.Y];
             return default;
         }
 
@@ -342,14 +329,14 @@ namespace AdventOfCode.Helpers
             val = _board[x, y];
             return true;
         }
-        public bool TryGetValueAt((int x, int y) pos, out T val)
+        public bool TryGetValueAt(Point pos, out T val)
         {
-            if (!XInRange(pos.x) || !YInRange(pos.y))
+            if (!XInRange(pos.X) || !YInRange(pos.Y))
             {
                 val = default;
                 return false;
             }
-            val = _board[pos.x, pos.y];
+            val = _board[pos.X, pos.Y];
             return true;
         }
 
@@ -357,6 +344,13 @@ namespace AdventOfCode.Helpers
         {
             if (!XInRange(x) || !YInRange(y)) return false;
             _board[x, y] = ch;
+            return true;
+        }
+
+        public bool SetValueAt(Point pos, T ch)
+        {
+            if (!XInRange(pos.X) || !YInRange(pos.Y)) return false;
+            _board[pos.X, pos.Y] = ch;
             return true;
         }
 
@@ -369,6 +363,12 @@ namespace AdventOfCode.Helpers
         public bool YInRange(int y)
         {
             return y >= 0 && y < _board.GetLength(1);
+        }
+
+
+        public bool PositionInRange(Point pos)
+        {
+            return XInRange(pos.X) && YInRange(pos.Y);
         }
 
         public T MoveUp(int count = 1)
@@ -517,18 +517,13 @@ namespace AdventOfCode.Helpers
 
         public int CountValues(T c)
         {
-            var count = 0;
-            for (var x = 0; x < Width; x++)
-            for (var y = 0; y < Height; y++)
-                if (_board[x, y].Equals(c))
-                    count++;
-            return count;
+            return ValuesAndPositions.Count(v => v.value.Equals(c));
         }
 
         #endregion
 
 
-        public Board<T> RotateACW()
+        public Board<T> RotateAcw()
         {
             var b = new Board<T>(Height, Width);
             var x2 = 0;
@@ -640,5 +635,36 @@ namespace AdventOfCode.Helpers
         }
 
         public bool PositionIsValid => XInRange(X) && YInRange(Y);
+
+        public string WriteToString(string rowConcatenator = "\r\n", string columnConcatenator = "")
+        {
+            return string.Join(rowConcatenator, GetRows().Select(r => string.Join(columnConcatenator, r)));
+        }
+
+        public (Board<T> board1, Board<T> board2) SplitAtXLine(int x)
+        {
+            var board1 = new Board<T>(x, Height);
+            var board2 = new Board<T>(Width - x - 1, Height);
+            foreach (var (pos, value) in ValuesAndPositions)
+            {
+                if (board1.PositionInRange(pos)) board1.SetValueAt(pos, value);
+                else board2.SetValueAt(pos.X - x - 1, pos.Y, value);
+            }
+
+            return (board1, board2);
+        }
+
+        public (Board<T> board1, Board<T> board2) SplitAtYLine(int y)
+        {
+            var board1 = new Board<T>(Width, y);
+            var board2 = new Board<T>(Width, Height - y - 1);
+            foreach (var p in ValuesAndPositions)
+            {
+                if (board1.PositionInRange(p.pos)) board1.SetValueAt(p.pos, p.value);
+                else board2.SetValueAt(p.pos.X, p.pos.Y - y - 1, p.value);
+            }
+
+            return (board1, board2);
+        }
     }
 }

@@ -11,10 +11,10 @@ namespace AdventOfCode.Advent2020
             Answer1 = 373;
             Answer2 = 3917;
         }
-        private Dictionary<(int x, int y), int> GetDictionary()
+        private Dictionary<Point, int> GetDictionary()
         {
             var lines = DataFile.ReadAll<string>();
-            Dictionary<(int x, int y), int> dict = new Dictionary<(int x, int y), int>();
+            Dictionary<Point, int> dict = new Dictionary<Point, int>();
             foreach (var line in lines)
             {
                 var l = line;
@@ -56,9 +56,9 @@ namespace AdventOfCode.Advent2020
                     }
                 }
 
-                if (!dict.ContainsKey((x, y)))
-                    dict[(x, y)] = 0;
-                dict[(x, y)]++;
+                if (!dict.ContainsKey(new Point(x, y)))
+                    dict[new Point(x, y)] = 0;
+                dict[new Point(x, y)]++;
             }
 
             return dict;
@@ -72,22 +72,22 @@ namespace AdventOfCode.Advent2020
 
         public override object ExecutePart2()
         {
-            var hash = new HashSet<(int x, int y)>(GetDictionary().Where(d => d.Value % 2 == 1).Select(k => k.Key));
+            var hash = new HashSet<Point>(GetDictionary().Where(d => d.Value % 2 == 1).Select(k => k.Key));
 
-            int GetBlackCount((int x, int y) adjTile)
+            int GetBlackCount(Point adjTile)
             {
                 var bc = 0;
-                if (hash.Contains((adjTile.x + 1, adjTile.y))) bc++;
-                if (hash.Contains((adjTile.x, adjTile.y - 1))) bc++;
-                if (hash.Contains((adjTile.x - 1, adjTile.y - 1))) bc++;
-                if (hash.Contains((adjTile.x - 1, adjTile.y))) bc++;
-                if (hash.Contains((adjTile.x, adjTile.y + 1))) bc++;
-                if (hash.Contains((adjTile.x + 1, adjTile.y + 1))) bc++;
+                if (hash.Contains(new Point(adjTile.X + 1, adjTile.Y))) bc++;
+                if (hash.Contains(new Point(adjTile.X, adjTile.Y - 1))) bc++;
+                if (hash.Contains(new Point(adjTile.X - 1, adjTile.Y - 1))) bc++;
+                if (hash.Contains(new Point(adjTile.X - 1, adjTile.Y))) bc++;
+                if (hash.Contains(new Point(adjTile.X, adjTile.Y + 1))) bc++;
+                if (hash.Contains(new Point(adjTile.X + 1, adjTile.Y + 1))) bc++;
                 return bc;
             }
             for (int i = 0; i < 100; i++)
             {
-                var newHash = new HashSet<(int x, int y)>();
+                var newHash = new HashSet<Point>();
                 foreach (var tile in hash)
                 {
                     var blackCount = GetBlackCount(tile);
@@ -95,19 +95,19 @@ namespace AdventOfCode.Advent2020
                     if (blackCount == 1 || blackCount == 2)
                         newHash.Add(tile);
 
-                    void CheckAdjacentWhite((int x, int y) adjTile)
+                    void CheckAdjacentWhite(Point adjTile)
                     {
                         if (hash.Contains(adjTile)) return;
                         if (GetBlackCount(adjTile) == 2)
                             newHash.Add(adjTile);
                     }
 
-                    CheckAdjacentWhite((tile.x + 1, tile.y));
-                    CheckAdjacentWhite((tile.x, tile.y - 1));
-                    CheckAdjacentWhite((tile.x - 1, tile.y - 1));
-                    CheckAdjacentWhite((tile.x - 1, tile.y));
-                    CheckAdjacentWhite((tile.x, tile.y + 1));
-                    CheckAdjacentWhite((tile.x + 1, tile.y + 1));
+                    CheckAdjacentWhite(new Point(tile.X + 1, tile.Y));
+                    CheckAdjacentWhite(new Point(tile.X, tile.Y - 1));
+                    CheckAdjacentWhite(new Point(tile.X - 1, tile.Y - 1));
+                    CheckAdjacentWhite(new Point(tile.X - 1, tile.Y));
+                    CheckAdjacentWhite(new Point(tile.X, tile.Y + 1));
+                    CheckAdjacentWhite(new Point(tile.X + 1, tile.Y + 1));
 
                 }
                 hash = newHash;

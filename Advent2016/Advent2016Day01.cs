@@ -39,7 +39,7 @@ public class Advent2016Day01 : Solution
         var dirs = "NESW";
         var dir = 'N';
         int x = 0, y = 0;
-        var visited = new List<(int x, int y)>();
+        var visited = new List<Point>();
         foreach (string bit in bits)
         {
             char rl = bit[0];
@@ -51,7 +51,7 @@ public class Advent2016Day01 : Solution
             {
                 case 'N':
                 {
-                    foreach (var step in Functions.Range(y + 1, y + dist).Select(ystep => (x, ystep)))
+                    foreach (var step in Functions.Range(y + 1, y + dist).Select(ystep => new Point(x, ystep)))
                     {
                         y++;
                         if (visited.Contains(step))
@@ -63,7 +63,7 @@ public class Advent2016Day01 : Solution
                 }
                 case 'E':
                 {
-                    foreach (var step in Functions.Range(x + 1, x + dist).Select(xstep => (xstep, y)))
+                    foreach (var step in Functions.Range(x + 1, x + dist).Select(xstep => new Point(xstep, y)))
                     {
                         x++;
                         if (visited.Contains(step))
@@ -75,7 +75,7 @@ public class Advent2016Day01 : Solution
                 }
                 case 'S':
                 {
-                    foreach (var step in Functions.Range(y - 1, y - dist).Select(ystep => (x, ystep)))
+                    foreach (var step in Functions.Range(y - 1, y - dist).Select(ystep => new Point(x, ystep)))
                     {
                         y--;
                         if (visited.Contains(step))
@@ -87,7 +87,7 @@ public class Advent2016Day01 : Solution
                 }
                 case 'W':
                 {
-                    foreach (var step in Functions.Range(x - 1, x - dist).Select(xstep => (xstep, y)))
+                    foreach (var step in Functions.Range(x - 1, x - dist).Select(xstep => new Point(xstep, y)))
                     {
                         x--;
                         if (visited.Contains(step))
