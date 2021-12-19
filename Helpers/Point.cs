@@ -55,4 +55,8 @@ public class Point
         return new Point(X + distance, Y);
     }
 
+    public override string ToString()
+    {
+        return $"{X},{Y}";
+    }
 }

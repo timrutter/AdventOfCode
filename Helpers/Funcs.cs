@@ -307,17 +307,17 @@ public static class Functions
     {
         #region Methods
 
-        public static Board<char> ReadBoard(this string filename)
+        public static Board<T> ReadBoard<T>(this string filename) where T : struct
         {
             var read = File.ReadAllLines(filename);
-            var board = new Board<char>(read[0].Length, read.Length);
+            var board = new Board<T>(read[0].Length, read.Length);
             for (var y = 0; y < read.Length; y++)
             {
                 var s = read[y];
                 for (var x = 0; x < s.Length && x < board.Width; x++)
                 {
                     var ch = read[y][x];
-                    board.SetValueAt(x, y, ch);
+                    board.SetValueAt(x, y, (T)Convert.ChangeType(ch.ToString(),typeof(T)));
                 }
 
             }
@@ -326,7 +326,7 @@ public static class Functions
         }
         public static Board<T> ReadBoard<T>(this string filename, string separator, StringSplitOptions options) where T : struct
         {
-            var read = filename.ReadAllSplitToType<T>(separator, options);
+            var read = filename.ReadAllFromFileAndSplitToType<T>(separator, options);
             var board = new Board<T>(read[0].Count, read.Count);
             for (var y = 0; y < read.Count; y++)
             {
@@ -360,11 +360,18 @@ public static class Functions
             }
         }
 
-        public static List<List<T>> ReadAllSplitToType<T>(this string fileName, string separator,
+        public static List<List<T>> ReadAllFromFileAndSplitToType<T>(this string fileName, string separator,
             StringSplitOptions options = StringSplitOptions.None)
         {
             return File.ReadAllLines(fileName).Select(l => l.SplitToType<T>(separator, options).ToList()).ToList();
         }
+
+        public static List<List<T>> ReadAllSplitToType<T>(this string s, string separator,
+            StringSplitOptions options = StringSplitOptions.None)
+        {
+            return s.Split("\r\n", options).Select(l => l.SplitToType<T>(separator, options).ToList()).ToList();
+        }
+
         public static IEnumerable<(T1 key, T2 value)> ReadAllKeyValuePairs<T1, T2>(this string fileName,
             string separator = ":")
         {

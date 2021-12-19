@@ -370,6 +370,10 @@ namespace AdventOfCode.Helpers
         {
             return XInRange(pos.X) && YInRange(pos.Y);
         }
+        public bool PositionInRange(int x, int y)
+        {
+            return XInRange(x) && YInRange(y);
+        }
 
         public T MoveUp(int count = 1)
         {
@@ -635,6 +639,10 @@ namespace AdventOfCode.Helpers
         }
 
         public bool PositionIsValid => XInRange(X) && YInRange(Y);
+        public Point BottomRight => new Point(Width - 1, Height - 1);
+        public Point TopRight => new Point(Width - 1, 0);
+        public Point BottomLeft => new Point(0, Height - 1);
+        public Point TopLeft => new Point(0,0);
 
         public string WriteToString(string rowConcatenator = "\r\n", string columnConcatenator = "")
         {

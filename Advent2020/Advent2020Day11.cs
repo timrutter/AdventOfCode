@@ -11,7 +11,7 @@ namespace AdventOfCode.Advent2020
         }
         public override object ExecutePart1()
         {
-            var board2 = DataFile.ReadBoard();
+            var board2 = DataFile.ReadBoard<char>();
             //board2.Dump();
 
             int CountOccupied(Board<char> board, int x, int y)
@@ -58,7 +58,7 @@ namespace AdventOfCode.Advent2020
 
         public override object ExecutePart2()
         {
-            var board2 = DataFile.ReadBoard();
+            var board2 = DataFile.ReadBoard<char>();
 
             int CountOccupied(Board<char> board, int x, int y)
             {

@@ -25,7 +25,7 @@ namespace AdventOfCode.Advent2021
 
         private (Board<char> board, List<(string dir, int line)> folds) ReadBoard()
         {
-            var points = DataFile.ReadAllSplitToType<int>(",").Select(p => new Point(p[0], p[1])).ToList();
+            var points = DataFile.ReadAllFromFileAndSplitToType<int>(",").Select(p => new Point(p[0], p[1])).ToList();
             var folds = GetDataFile("1").ReadAll<string>().Select(p =>
             {
                 var s = p.Replace("fold along ", "").Split("=");

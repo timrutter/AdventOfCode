@@ -15,7 +15,7 @@ namespace AdventOfCode.Advent2016
         }
         public override object ExecutePart1()
         {
-            var triangles = DataFile.ReadAllSplitToType<int>(" ", StringSplitOptions.RemoveEmptyEntries );
+            var triangles = DataFile.ReadAllFromFileAndSplitToType<int>(" ", StringSplitOptions.RemoveEmptyEntries );
             return triangles.Count(t => 
                 t[0] + t[1] > t[2] &&
                 t[0] + t[2] > t[1] &&
