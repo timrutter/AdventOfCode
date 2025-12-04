@@ -15,9 +15,8 @@ public class Advent2025Day04 : Solution
     {
         var board = DataFile.LoadBoard<char>();
         var flcount = 0;
-        foreach (var boardPosition in board.Traverse)
+        foreach (var _ in board.Traverse)
         {
-            board.SetPosition(boardPosition.X, boardPosition.Y);
             if (board.Value == '.') continue;
             if (board.ValuesAround().Count(v => v == '@') >= 4) continue;
             flcount++;
