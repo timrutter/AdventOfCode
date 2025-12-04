@@ -31,16 +31,16 @@ public class Advent2025Day04 : Solution
         var board = DataFile.LoadBoard<char>();
         while (true)
         {
-            var changed = 0;
+            var changed = false;
             foreach (var _ in board.Traverse)
             {
                 if (board.Value is '.' or 'x') continue;
                 if (board.ValuesAround().Count(v => v == '@') >= 4) continue;
                 board.SetValueAtCurrent('x');
-                changed++;
+                changed = true;
             }
 
-            if (changed == 0) break;
+            if (!changed) break;
         }
 
         return board.CountValues('x');
