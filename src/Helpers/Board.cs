@@ -363,11 +363,25 @@ public class Board<T> where T : struct
     {
         get
         {
-            for (var x = 0; x < Width; x++)
             for (var y = 0; y < Height; y++)
+            for (var x = 0; x < Width; x++)
                 yield return new Point(x, y);
         }
     }
+
+    public IEnumerable<Point> Traverse
+    {
+        get
+        {
+            foreach (var p in Positions)
+            {
+                SetPosition(p);
+                yield return p;
+            }
+        }
+    }
+
+    public Point Position => new(X, Y);
 
     public void SetValues(IEnumerable<T> values)
     {
@@ -451,6 +465,12 @@ public class Board<T> where T : struct
         Y = y;
     }
 
+    public void SetPosition(Point point)
+    {
+        X = point.X;
+        Y = point.Y;
+    }
+
     public T ValueAt(int x, int y)
     {
         if (XInRange(x) && YInRange(y))
@@ -464,6 +484,105 @@ public class Board<T> where T : struct
         if (XInRange(pos.X) && YInRange(pos.Y))
             return _board[pos.X, pos.Y];
         return default;
+    }
+
+    public IEnumerable<Point> PositionsAround()
+    {
+        return new List<Point>
+        {
+            PositionDown(), PositionDownLeft(), PositionLeft(), PositionUpLeft(), PositionUp(), PositionUpRight(),
+            PositionRight(), PositionDownRight()
+        };
+    }
+
+    public IEnumerable<T> ValuesAround()
+    {
+        return new List<T>
+        {
+            ValueDown(), ValueDownLeft(), ValueLeft(), ValueUpLeft(), ValueUp(), ValueUpRight(), ValueRight(),
+            ValueDownRight()
+        };
+    }
+
+    public T ValueDown(int countY = 1)
+    {
+        return ValueAt(PositionDown(countY));
+    }
+
+    public T ValueDownLeft(int countX = 1, int countY = 1)
+    {
+        return ValueAt(PositionDownLeft(countX, countY));
+    }
+
+    public T ValueLeft(int countX = 1)
+    {
+        return ValueAt(PositionLeft(countX));
+    }
+
+    public T ValueUpLeft(int countX = 1, int countY = 1)
+    {
+        return ValueAt(PositionUpLeft(countX, countY));
+    }
+
+    public T ValueUp(int countY = 1)
+    {
+        return ValueAt(PositionUp(countY));
+    }
+
+    public T ValueUpRight(int countX = 1, int countY = 1)
+    {
+        return ValueAt(PositionUpRight(countX, countY));
+    }
+
+    public T ValueRight(int countX = 1)
+    {
+        return ValueAt(PositionRight(countX));
+    }
+
+    public T ValueDownRight(int countX = 1, int countY = 1)
+    {
+        return ValueAt(PositionDownRight(countX, countY));
+    }
+
+
+    public Point PositionDown(int countY = 1)
+    {
+        return new Point(X, Y - countY);
+    }
+
+    public Point PositionDownLeft(int countX = 1, int countY = 1)
+    {
+        return new Point(X - countX, Y - countY);
+    }
+
+    public Point PositionLeft(int countX = 1)
+    {
+        return new Point(X - countX, Y);
+    }
+
+    public Point PositionUpLeft(int countX = 1, int countY = 1)
+    {
+        return new Point(X - countX, Y + countY);
+    }
+
+    public Point PositionUp(int countY = 1)
+    {
+        return new Point(X, Y + countY);
+    }
+
+    public Point PositionUpRight(int countX = 1, int countY = 1)
+    {
+        return new Point(X + countX, Y + countY);
+    }
+
+    public Point PositionRight(int countX = 1)
+    {
+        return new Point(X + countX, Y);
+    }
+
+    public Point PositionDownRight(int countX = 1, int countY = 1)
+    {
+        return new Point(X + countX, Y - countY);
     }
 
     public bool TryGetValueAt(int x, int y, out T val)
@@ -504,6 +623,10 @@ public class Board<T> where T : struct
         return true;
     }
 
+    public bool SetValueAtCurrent(T ch)
+    {
+        return SetValueAt(X, Y, ch);
+    }
 
     public bool XInRange(int x)
     {
@@ -696,7 +819,7 @@ public class Board<T> where T : struct
 
     public int CountValues(T c)
     {
-        return ValuesAndPositions.Count(v => v.value.Equals(c));
+        return Values.Count(v => v.Equals(c));
     }
 
     #endregion

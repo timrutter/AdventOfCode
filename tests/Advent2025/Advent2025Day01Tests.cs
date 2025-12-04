@@ -7,7 +7,7 @@ public class Advent2025Tests
     [Fact]
     public void Day01Should()
     {
-        int count = 0;
+        var count = 0;
         Assert.Equal(50, Advent2025Day01.GetPos("L50", 0, ref count));
         Assert.Equal(0, count);
         Assert.Equal(50, Advent2025Day01.GetPos("R50", 0, ref count));
@@ -45,13 +45,13 @@ public class Advent2025Tests
         Assert.False(Advent2025Day02.IsWrong(1698528));
         Assert.False(Advent2025Day02.IsWrong(115));
         Assert.False(Advent2025Day02.IsWrong(101));
-        
+
         Assert.True(Advent2025Day02.IsWrong(1188511885));
         Assert.True(Advent2025Day02.IsWrong(222222));
         Assert.True(Advent2025Day02.IsWrong(446446));
         Assert.True(Advent2025Day02.IsWrong(38593859));
     }
-    
+
     [Fact]
     public void Day02ShouldIsWrong2()
     {
@@ -59,7 +59,7 @@ public class Advent2025Tests
         Assert.False(Advent2025Day02.IsWrong2(1698528));
         Assert.False(Advent2025Day02.IsWrong2(115));
         Assert.False(Advent2025Day02.IsWrong2(101));
-        
+
         Assert.True(Advent2025Day02.IsWrong2(1188511885));
         Assert.True(Advent2025Day02.IsWrong2(222222));
         Assert.True(Advent2025Day02.IsWrong2(446446));
@@ -72,58 +72,69 @@ public class Advent2025Tests
     [Fact]
     public void Day04Should()
     {
-        
-        Assert.Equal(3,Advent2025Day03.GetMax("23", 1));
-        Assert.Equal(43,Advent2025Day03.GetMax("243", 2));
+        Assert.Equal(3, Advent2025Day03.GetMax("23", 1));
+        Assert.Equal(43, Advent2025Day03.GetMax("243", 2));
         Assert.Equal(987654321111, Advent2025Day03.GetMax("987654321111111", 12));
         Assert.Equal(811111111119, Advent2025Day03.GetMax("811111111111119", 12));
         Assert.Equal(434234234278, Advent2025Day03.GetMax("234234234234278", 12));
         Assert.Equal(888911112111, Advent2025Day03.GetMax("818181911112111", 12));
-        
-        
-        Assert.Equal(998767332373, Advent2025Day03.GetMax("2433733322122313275322425557825226339325552533247133133749552235546742511874255634664556254127332373", 12));
-        Assert.Equal(999994444284, Advent2025Day03.GetMax("3522942223322645227152924923662823415542242241332558832344533212792344324625537266163552229423444284", 12));
-        Assert.Equal(955522553442, Advent2025Day03.GetMax("2231522222122331262221211664522262242625232222221332224222254432223362222322222911252222551222553442", 12));
-        Assert.Equal(976531423226, Advent2025Day03.GetMax("2473223324383134323333232322536353138286353628313413243292544234432314332342341424434427632531423226", 12));
+
+
+        Assert.Equal(998767332373,
+            Advent2025Day03.GetMax(
+                "2433733322122313275322425557825226339325552533247133133749552235546742511874255634664556254127332373",
+                12));
+        Assert.Equal(999994444284,
+            Advent2025Day03.GetMax(
+                "3522942223322645227152924923662823415542242241332558832344533212792344324625537266163552229423444284",
+                12));
+        Assert.Equal(955522553442,
+            Advent2025Day03.GetMax(
+                "2231522222122331262221211664522262242625232222221332224222254432223362222322222911252222551222553442",
+                12));
+        Assert.Equal(976531423226,
+            Advent2025Day03.GetMax(
+                "2473223324383134323333232322536353138286353628313413243292544234432314332342341424434427632531423226",
+                12));
     }
+
     [Fact]
     public void Day05Should()
     {
-        
     }
+
     [Fact]
     public void Day06Should()
     {
-        
     }
+
     [Fact]
     public void Day07Should()
     {
-        
     }
+
     [Fact]
     public void Day08Should()
     {
-        
     }
+
     [Fact]
     public void Day09Should()
     {
-        
     }
+
     [Fact]
     public void Day10Should()
     {
-        
     }
+
     [Fact]
     public void Day11Should()
     {
-        
     }
+
     [Fact]
     public void Day12Should()
     {
-        
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using AdventOfCode.Helpers;
+﻿using AdventOfCode.Helpers;
 
 namespace AdventOfCode.Advent2025;
 
@@ -43,7 +42,7 @@ public class Advent2025Day01 : Solution
         }
 
         if (rotStr[0] != 'L' || rot <= 0) return pos;
-        
+
         var newPos = pos - rot % 100;
         switch (newPos)
         {
@@ -57,9 +56,7 @@ public class Advent2025Day01 : Solution
                 break;
         }
 
-        return newPos ;
-        
-
+        return newPos;
     }
 
     public override object ExecutePart2()

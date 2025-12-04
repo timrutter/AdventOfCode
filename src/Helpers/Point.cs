@@ -2,7 +2,7 @@
 
 namespace AdventOfCode.Helpers;
 
-public class Point
+public class Point : IEquatable<Point>
 {
     public Point(int x, int y)
     {
@@ -13,8 +13,9 @@ public class Point
     public int X { get; }
     public int Y { get; }
 
-    protected bool Equals(Point other)
+    public bool Equals(Point other)
     {
+        if (other is null) return false;
         return X == other.X && Y == other.Y;
     }
 

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using AdventOfCode.Helpers;
 
 namespace AdventOfCode.Advent2025;
@@ -22,14 +21,10 @@ public class Advent2025Day02 : Solution
             var start = bits[0];
             var end = bits[1];
             for (var i = start; i <= end; i++)
-            {
                 if (IsWrong(i))
-                {
                     total += i;
-                }
-            }
-
         }
+
         return total;
     }
 
@@ -49,7 +44,7 @@ public class Advent2025Day02 : Solution
                 var bit = s[..(s.Length / div)];
                 var step = s.Length / div;
                 var equal = true;
-                for(var pos = step; pos < s.Length ; pos+=step)
+                for (var pos = step; pos < s.Length; pos += step)
                     if (bit != s[pos..(pos + step)])
                     {
                         equal = false;
@@ -60,8 +55,8 @@ public class Advent2025Day02 : Solution
             }
 
         return false;
-
     }
+
     public override object ExecutePart2()
     {
         var arr = DataFile.ReadAll<string>()[0].Split(",");
@@ -72,14 +67,10 @@ public class Advent2025Day02 : Solution
             var start = bits[0];
             var end = bits[1];
             for (var i = start; i <= end; i++)
-            {
                 if (IsWrong2(i))
-                {
                     total += i;
-                }
-            }
-
         }
+
         return total;
     }
 }
