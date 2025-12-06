@@ -43,106 +43,109 @@ public static class BoardExtensions
         return board;
     }
 
-    public static Board<T> Jump<T>(this Board<T> board, int x, int y) where T : struct
+    extension<T>(Board<T> board) where T : struct
     {
-        board.SetPosition(x, y);
-        return board;
-    }
+        public Board<T> Jump(int x, int y)
+        {
+            board.SetPosition(x, y);
+            return board;
+        }
 
-    public static Board<T> Up<T>(this Board<T> board, int count = 1) where T : struct
-    {
-        board.MoveUp(count);
-        return board;
-    }
+        public Board<T> Up(int count = 1)
+        {
+            board.MoveUp(count);
+            return board;
+        }
 
-    public static Board<T> Down<T>(this Board<T> board, int count = 1) where T : struct
-    {
-        board.MoveDown(count);
-        return board;
-    }
+        public Board<T> Down(int count = 1)
+        {
+            board.MoveDown(count);
+            return board;
+        }
 
-    public static Board<T> Left<T>(this Board<T> board, int count = 1) where T : struct
-    {
-        board.MoveLeft(count);
-        return board;
-    }
+        public Board<T> Left(int count = 1)
+        {
+            board.MoveLeft(count);
+            return board;
+        }
 
-    public static Board<T> Right<T>(this Board<T> board, int count = 1) where T : struct
-    {
-        board.MoveRight(count);
-        return board;
-    }
+        public Board<T> Right(int count = 1)
+        {
+            board.MoveRight(count);
+            return board;
+        }
 
-    public static Board<T> UpLeft<T>(this Board<T> board, int count = 1) where T : struct
-    {
-        board.MoveUpLeft(count);
-        return board;
-    }
+        public Board<T> UpLeft(int count = 1)
+        {
+            board.MoveUpLeft(count);
+            return board;
+        }
 
-    public static Board<T> UpRight<T>(this Board<T> board, int count = 1) where T : struct
-    {
-        board.MoveUpRight(count);
-        return board;
-    }
+        public Board<T> UpRight(int count = 1)
+        {
+            board.MoveUpRight(count);
+            return board;
+        }
 
-    public static Board<T> DownRight<T>(this Board<T> board, int count = 1) where T : struct
-    {
-        board.MoveDownRight(count);
-        return board;
-    }
+        public Board<T> DownRight(int count = 1)
+        {
+            board.MoveDownRight(count);
+            return board;
+        }
 
-    public static Board<T> DownLeft<T>(this Board<T> board, int count = 1) where T : struct
-    {
-        board.MoveDownLeft(count);
-        return board;
-    }
+        public Board<T> DownLeft(int count = 1)
+        {
+            board.MoveDownLeft(count);
+            return board;
+        }
 
-    public static Board<T> UpWhile<T>(this Board<T> board, Func<T, bool> predicate) where T : struct
-    {
-        board.MoveUpWhile(predicate);
-        return board;
-    }
+        public Board<T> UpWhile(Func<T, bool> predicate)
+        {
+            board.MoveUpWhile(predicate);
+            return board;
+        }
 
-    public static Board<T> DownWhile<T>(this Board<T> board, Func<T, bool> predicate) where T : struct
-    {
-        board.MoveDownWhile(predicate);
-        return board;
-    }
+        public Board<T> DownWhile(Func<T, bool> predicate)
+        {
+            board.MoveDownWhile(predicate);
+            return board;
+        }
 
-    public static Board<T> LeftWhile<T>(this Board<T> board, Func<T, bool> predicate) where T : struct
-    {
-        board.MoveLeftWhile(predicate);
-        return board;
-    }
+        public Board<T> LeftWhile(Func<T, bool> predicate)
+        {
+            board.MoveLeftWhile(predicate);
+            return board;
+        }
 
-    public static Board<T> RightWhile<T>(this Board<T> board, Func<T, bool> predicate) where T : struct
-    {
-        board.MoveRightWhile(predicate);
-        return board;
-    }
+        public Board<T> RightWhile(Func<T, bool> predicate)
+        {
+            board.MoveRightWhile(predicate);
+            return board;
+        }
 
-    public static Board<T> UpLeftWhile<T>(this Board<T> board, Func<T, bool> predicate) where T : struct
-    {
-        board.MoveUpLeftWhile(predicate);
-        return board;
-    }
+        public Board<T> UpLeftWhile(Func<T, bool> predicate)
+        {
+            board.MoveUpLeftWhile(predicate);
+            return board;
+        }
 
-    public static Board<T> UpRightWhile<T>(this Board<T> board, Func<T, bool> predicate) where T : struct
-    {
-        board.MoveUpRightWhile(predicate);
-        return board;
-    }
+        public Board<T> UpRightWhile(Func<T, bool> predicate)
+        {
+            board.MoveUpRightWhile(predicate);
+            return board;
+        }
 
-    public static Board<T> DownRightWhile<T>(this Board<T> board, Func<T, bool> predicate) where T : struct
-    {
-        board.MoveDownRightWhile(predicate);
-        return board;
-    }
+        public Board<T> DownRightWhile(Func<T, bool> predicate)
+        {
+            board.MoveDownRightWhile(predicate);
+            return board;
+        }
 
-    public static Board<T> DownLeftWhile<T>(this Board<T> board, Func<T, bool> predicate) where T : struct
-    {
-        board.MoveDownLeftWhile(predicate);
-        return board;
+        public Board<T> DownLeftWhile(Func<T, bool> predicate)
+        {
+            board.MoveDownLeftWhile(predicate);
+            return board;
+        }
     }
 
     public static List<(int x, int y, int z, int w)> GetNeighbours(int xS, int yS, int zS, int wS)

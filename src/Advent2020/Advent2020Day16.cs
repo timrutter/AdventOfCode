@@ -38,24 +38,24 @@ public class Advent2020Day16 : Solution
         var myTicket = lines[rules.Count + 2].SplitToType<int>(",").ToList();
         var nearbyTickets = lines.Skip(rules.Count + 5).Select(s => s.SplitToType<int>(",").ToList()).ToList();
         nearbyTickets.Insert(0, myTicket);
-        Dictionary<string, List<(int min, int max)>> dict = rules.ToDictionary(s => s.Split(":")[0], s =>
+        Dictionary<string, List<Range>> dict = rules.ToDictionary(s => s.Split(":")[0], s =>
         {
             return s.Split(": ")[1].Split(" or ")
                 .Select(b =>
                 {
                     var bits2 = b.SplitToType<int>("-").ToList();
-                    return (bits2[0], bits2[1]);
+                    return new Range (bits2[0], bits2[1]);
                 }).ToList();
         });
         var validNearbyTickets = nearbyTickets.Where(nt =>
-            nt.All(n => dict.Any(r => r.Value.Any(range => n.IsInRange(range))))).ToList();
+            nt.All(n => dict.Any(r => r.Value.Any(range => range.InRange(n))))).ToList();
         var possibleFields = new List<List<string>>();
         for (var i = 0; i < rules.Count; i++)
         {
             var fields = validNearbyTickets.Select(v => v[i]).ToList();
             fields.Sort();
             possibleFields.Add(dict.Where(d =>
-                    fields.All(f => d.Value.Any(range => f.IsInRange(range)))).Select(d => d.Key)
+                    fields.All(f => d.Value.Any(range => range.InRange(f)))).Select(d => d.Key)
                 .ToList());
         }
 

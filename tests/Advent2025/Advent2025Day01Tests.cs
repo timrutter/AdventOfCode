@@ -99,8 +99,40 @@ public class Advent2025Tests
     }
 
     [Fact]
-    public void Day05Should()
+    public void Day05ShouldOverlaps()
     {
+        Assert.True(new AdventOfCode.Helpers.Range(1,10).Overlaps(new AdventOfCode.Helpers.Range(0,11)));
+        Assert.True(new AdventOfCode.Helpers.Range(1,10).Overlaps(new AdventOfCode.Helpers.Range(1,11)));
+        Assert.True(new AdventOfCode.Helpers.Range(1,10).Overlaps(new AdventOfCode.Helpers.Range(2,11)));
+        Assert.True(new AdventOfCode.Helpers.Range(1,10).Overlaps(new AdventOfCode.Helpers.Range(2,10)));
+        Assert.True(new AdventOfCode.Helpers.Range(1,10).Overlaps(new AdventOfCode.Helpers.Range(2,09)));
+        Assert.True(new AdventOfCode.Helpers.Range(1,10).Overlaps(new AdventOfCode.Helpers.Range(2,11)));
+        Assert.True(new AdventOfCode.Helpers.Range(1,10).Overlaps(new AdventOfCode.Helpers.Range(2,11)));
+        Assert.True(new AdventOfCode.Helpers.Range(1,10).Overlaps(new AdventOfCode.Helpers.Range(2,11)));
+        Assert.True(new AdventOfCode.Helpers.Range(1,10).Overlaps(new AdventOfCode.Helpers.Range(2,9)));
+        Assert.False(new AdventOfCode.Helpers.Range(1,10).Overlaps(new AdventOfCode.Helpers.Range(11,20)));
+        
+        
+        Assert.Equal(0,new AdventOfCode.Helpers.Range(1,10).CombineRanges(new AdventOfCode.Helpers.Range(0,11)).Min);
+        Assert.Equal(1, new AdventOfCode.Helpers.Range(1,10).CombineRanges(new AdventOfCode.Helpers.Range(1,11)).Min);
+        Assert.Equal(1,new AdventOfCode.Helpers.Range(1,10).CombineRanges(new AdventOfCode.Helpers.Range(2,11)).Min);
+        Assert.Equal(1,new AdventOfCode.Helpers.Range(1,10).CombineRanges(new AdventOfCode.Helpers.Range(2,10)).Min);
+        Assert.Equal(1,new AdventOfCode.Helpers.Range(1,10).CombineRanges(new AdventOfCode.Helpers.Range(2,09)).Min);
+        Assert.Equal(1,new AdventOfCode.Helpers.Range(1,10).CombineRanges(new AdventOfCode.Helpers.Range(2,11)).Min);
+        Assert.Equal(1,new AdventOfCode.Helpers.Range(1,10).CombineRanges(new AdventOfCode.Helpers.Range(2,11)).Min);
+        Assert.Equal(1,new AdventOfCode.Helpers.Range(1,10).CombineRanges(new AdventOfCode.Helpers.Range(2,11)).Min);
+        Assert.Equal(1,new AdventOfCode.Helpers.Range(1,10).CombineRanges(new AdventOfCode.Helpers.Range(2,9)).Min);
+        
+        
+        Assert.Equal(11,new AdventOfCode.Helpers.Range(1,10).CombineRanges(new AdventOfCode.Helpers.Range(0,11)).Max);
+        Assert.Equal(11, new AdventOfCode.Helpers.Range(1,10).CombineRanges(new AdventOfCode.Helpers.Range(1,11)).Max);
+        Assert.Equal(11,new AdventOfCode.Helpers.Range(1,10).CombineRanges(new AdventOfCode.Helpers.Range(2,11)).Max);
+        Assert.Equal(10,new AdventOfCode.Helpers.Range(1,10).CombineRanges(new AdventOfCode.Helpers.Range(2,10)).Max);
+        Assert.Equal(10,new AdventOfCode.Helpers.Range(1,10).CombineRanges(new AdventOfCode.Helpers.Range(2,09)).Max);
+        Assert.Equal(11,new AdventOfCode.Helpers.Range(1,10).CombineRanges(new AdventOfCode.Helpers.Range(2,11)).Max);
+        Assert.Equal(11,new AdventOfCode.Helpers.Range(1,10).CombineRanges(new AdventOfCode.Helpers.Range(2,11)).Max);
+        Assert.Equal(11,new AdventOfCode.Helpers.Range(1,10).CombineRanges(new AdventOfCode.Helpers.Range(2,11)).Max);
+        Assert.Equal(10,new AdventOfCode.Helpers.Range(1,10).CombineRanges(new AdventOfCode.Helpers.Range(2,9)).Max);
     }
 
     [Fact]

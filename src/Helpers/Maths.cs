@@ -95,10 +95,6 @@ public static class Maths
         return val;
     }
 
-    public static bool IsInRange(this int n, (int min, int max) range)
-    {
-        return n >= range.min && n <= range.max;
-    }
 
     #endregion
 }
