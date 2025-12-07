@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AdventOfCode.Helpers;
 
@@ -19,15 +20,11 @@ public class Advent2025Day06 : Solution
         foreach (var line in lines)
         {
             var i = 0;
-            var l = line.Trim();
-            while (true)
+            var ls = line.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var l in ls)
             {
-                var j = l.IndexOfFirst(c => c == ' ');
-                var val = j == -1 ? l : l[..j];
                 if (sums.Count <= i) sums.Add([]);
-                sums[i].Add(val.Trim());
-                if (j == -1) break;
-                l = l[j..].Trim();
+                sums[i].Add(l.Trim());
                 i++;
             }
         }
@@ -58,8 +55,7 @@ public class Advent2025Day06 : Solution
                 total += nums.Sum();
                 nums.Clear();
             }
-
-            if (board.ValueAt(i, board.Height - 1) == '*')
+            else if (board.ValueAt(i, board.Height - 1) == '*')
             {
                 total += nums.Aggregate(1L, (t, v) => t * v);
                 nums.Clear();

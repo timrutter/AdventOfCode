@@ -1,20 +1,109 @@
-﻿namespace AdventOfCode.Advent2025;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using AdventOfCode.Helpers;
+
+namespace AdventOfCode.Advent2025;
 
 public class Advent2025Day07 : Solution
 {
+    public Dictionary<BeamAndRow, long> Options = new();
+
     public Advent2025Day07()
     {
-        Answer1 = null;
-        Answer2 = null;
+        Answer1 = 1698;
+        Answer2 = 95408386769474L;
     }
 
     public override object ExecutePart1()
     {
-        return int.MaxValue;
+        var board = DataFile.LoadBoard<char>();
+        var beams = new HashSet<int>
+        {
+            board.GetRow(0).IndexOfFirst(r => r == 'S')
+        };
+        var count = 0;
+        var rows = board.GetRows().Select(s => s.ToList()).Skip(1).ToList();
+        for (var i = 0; i < rows.Count - 1; i++)
+            foreach (var beam in beams.ToList())
+            {
+                if (rows[i + 1][beam] != '^') continue;
+                count++;
+                beams.Remove(beam);
+                beams.Add(beam + 1);
+                beams.Add(beam - 1);
+            }
+
+        return count;
+    }
+
+    private long CountRoutes(List<List<char>> rows, BeamAndRow current)
+    {
+        if (current.Row == rows.Count - 1) return 1;
+        long count = 0;
+        if (Options.TryGetValue(current, out var c)) return c;
+
+        if (rows[current.Row + 1][current.Beam] == '^')
+        {
+            count += GetCount(new BeamAndRow(current.Beam + 1, current.Row + 1));
+            count += GetCount(new BeamAndRow(current.Beam - 1, current.Row + 1));
+        }
+        else
+        {
+            count += GetCount(new BeamAndRow(current.Beam, current.Row + 1));
+        }
+
+        return count;
+
+        long GetCount(BeamAndRow beamAndRow)
+        {
+            var cnt = CountRoutes(rows, beamAndRow);
+            Options.TryAdd(beamAndRow, cnt);
+            return cnt;
+        }
     }
 
     public override object ExecutePart2()
     {
-        return int.MaxValue;
+        var board = DataFile.LoadBoard<char>();
+        var start = board.GetRow(0).IndexOfFirst(r => r == 'S');
+        var rows = board.GetRows().Select(s => s.ToList()).Skip(1).ToList();
+        return CountRoutes(rows, new BeamAndRow(start, 0));
+    }
+
+    public class BeamAndRow
+    {
+        public readonly int Beam;
+        public readonly int Row;
+
+
+        public BeamAndRow(int beam, int row)
+        {
+            Beam = beam;
+            Row = row;
+        }
+
+        protected bool Equals(BeamAndRow other)
+        {
+            return Beam == other.Beam && Row == other.Row;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is null) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((BeamAndRow)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Beam, Row);
+        }
+
+        public override string ToString()
+        {
+            return Beam.ToString();
+        }
     }
 }

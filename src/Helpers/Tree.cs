@@ -108,7 +108,21 @@ public abstract class Tree<TTree> where TTree : Tree<TTree>
                 stack.Push(current.Children[i]);
         }
     }
+    public int CountRoutes()
+    {
+        var stack = new Stack<TTree>();
+        stack.Push(this as TTree);
+        int count = 0;
+        while (stack.Any())
+        {
+            var current = stack.Pop();
+            count++;
+            for (var i = current.Children.Count - 1; i >= 0; i--)
+                stack.Push(current.Children[i]);
+        }
 
+        return count;
+    }
     /// <summary>
     ///     Returns the match index for this item of all the items that match the predicate
     /// </summary>
