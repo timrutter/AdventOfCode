@@ -80,10 +80,8 @@ public class Advent2025Day08 : Solution
         var circuits = new List< List<Link>>();
         Link lastLink = null;
         var i = 0;
-        while(true)
+        while(circuits.Count > 1 || pointsNotInCircuit.Count > 0)
         {
-            if (circuits.Count == 1 && pointsNotInCircuit.Count == 0)
-                break;
             lastLink = _links[i++];
             var p1 = lastLink.Point1;
             var p2 = lastLink.Point2;
