@@ -183,72 +183,7 @@ public class Advent2021Day19 : Solution
         }
     }
 
-    public class Point3D
-    {
-        public Point3D(int x, int y, int z)
-        {
-            X = x;
-            Y = y;
-            Z = z;
-        }
-
-        public int X { get; }
-        public int Y { get; }
-        public int Z { get; }
-
-        // ReSharper disable once MemberCanBePrivate.Global
-        protected bool Equals(Point3D other)
-        {
-            if (ReferenceEquals(other, null)) return false;
-            return X == other.X && Y == other.Y && Z == other.Z;
-        }
-
-        public static Point3D operator -(Point3D p1, Point3D p2)
-        {
-            return new Point3D(p1.X - p2.X, p1.Y - p2.Y, p1.Z - p2.Z);
-        }
-
-        public static Point3D operator +(Point3D p1, Point3D p2)
-        {
-            return new Point3D(p1.X + p2.X, p1.Y + p2.Y, p1.Z + p2.Z);
-        }
-
-        public static bool operator ==(Point3D p1, Point3D p2)
-        {
-            if (p1 is null && p2 is null) return true;
-            return p2 is not null && p1 is not null && p1.Equals(p2);
-        }
-
-        public static bool operator !=(Point3D p1, Point3D p2)
-        {
-            return !(p1 == p2);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            return obj.GetType() == GetType() && Equals((Point3D)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(X, Y, Z);
-        }
-
-        public override string ToString()
-        {
-            return $"{X},{Y},{Z}";
-        }
-
-        public static Point3D operator *(Point3D p1, Point3D p2)
-        {
-            return new Point3D(
-                p1.X * p2.X,
-                p1.Y * p2.Y,
-                p1.Z * p2.Z);
-        }
-    }
+    
 }
 
 public enum SwapMode

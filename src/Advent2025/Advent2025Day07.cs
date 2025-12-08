@@ -7,7 +7,7 @@ namespace AdventOfCode.Advent2025;
 
 public class Advent2025Day07 : Solution
 {
-    public Dictionary<BeamAndRow, long> Options = new();
+    private readonly Dictionary<BeamAndRow, long> _options = new();
 
     public Advent2025Day07()
     {
@@ -25,9 +25,8 @@ public class Advent2025Day07 : Solution
         var count = 0;
         var rows = board.GetRows().Select(s => s.ToList()).Skip(1).ToList();
         for (var i = 0; i < rows.Count - 1; i++)
-            foreach (var beam in beams.ToList())
+            foreach (var beam in beams.ToList().Where(beam => rows[i + 1][beam] == '^'))
             {
-                if (rows[i + 1][beam] != '^') continue;
                 count++;
                 beams.Remove(beam);
                 beams.Add(beam + 1);
@@ -41,7 +40,7 @@ public class Advent2025Day07 : Solution
     {
         if (current.Row == rows.Count - 1) return 1;
         long count = 0;
-        if (Options.TryGetValue(current, out var c)) return c;
+        if (_options.TryGetValue(current, out var c)) return c;
 
         if (rows[current.Row + 1][current.Beam] == '^')
         {
@@ -58,7 +57,7 @@ public class Advent2025Day07 : Solution
         long GetCount(BeamAndRow beamAndRow)
         {
             var cnt = CountRoutes(rows, beamAndRow);
-            Options.TryAdd(beamAndRow, cnt);
+            _options.TryAdd(beamAndRow, cnt);
             return cnt;
         }
     }
@@ -71,19 +70,13 @@ public class Advent2025Day07 : Solution
         return CountRoutes(rows, new BeamAndRow(start, 0));
     }
 
-    public class BeamAndRow
+    private class BeamAndRow(int beam, int row)
     {
-        public readonly int Beam;
-        public readonly int Row;
+        public readonly int Beam = beam;
+        public readonly int Row = row;
 
 
-        public BeamAndRow(int beam, int row)
-        {
-            Beam = beam;
-            Row = row;
-        }
-
-        protected bool Equals(BeamAndRow other)
+        private bool Equals(BeamAndRow other)
         {
             return Beam == other.Beam && Row == other.Row;
         }
@@ -92,8 +85,7 @@ public class Advent2025Day07 : Solution
         {
             if (obj is null) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((BeamAndRow)obj);
+            return obj.GetType() == GetType() && Equals((BeamAndRow)obj);
         }
 
         public override int GetHashCode()

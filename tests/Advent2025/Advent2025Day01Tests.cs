@@ -1,3 +1,4 @@
+using AdventOfCode.Advent2021;
 using AdventOfCode.Advent2025;
 
 namespace AdventOfCodeTests.Advent2025;
