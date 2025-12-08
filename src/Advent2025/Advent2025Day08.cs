@@ -79,12 +79,10 @@ public class Advent2025Day08 : Solution
         var pointsNotInCircuit = _points.ToList();
         var circuits = new List< List<Link>>();
         Link lastLink = null;
-        bool moreThanOne = false;
         var i = 0;
         while(true)
         {
-            if (circuits.Count > 1) moreThanOne = true;
-            if (circuits.Count == 1 && moreThanOne && pointsNotInCircuit.Count == 0)
+            if (circuits.Count == 1 && pointsNotInCircuit.Count == 0)
                 break;
             lastLink = _links[i++];
             var p1 = lastLink.Point1;
