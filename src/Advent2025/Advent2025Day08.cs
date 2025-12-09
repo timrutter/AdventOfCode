@@ -92,7 +92,6 @@ public class Advent2025Day08 : Solution
             if (circuit1 == null && circuit2 == null)
             { 
                 circuits.Add([lastLink]);
-                
                 continue;
             }
             if (circuit1 == null)

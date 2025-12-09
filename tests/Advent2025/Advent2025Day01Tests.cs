@@ -1,5 +1,6 @@
 using AdventOfCode.Advent2021;
 using AdventOfCode.Advent2025;
+using AdventOfCode.Helpers;
 
 namespace AdventOfCodeTests.Advent2025;
 
@@ -152,8 +153,47 @@ public class Advent2025Tests
     }
 
     [Fact]
-    public void Day09Should()
+    public void Day09ShouldIntersect()
     {
+        // endpoint
+        Assert.True(Advent2025Day09.LinesIntersect(
+            new Point(0,0), new Point(10,0),
+            new Point(0,0), new Point(0,10)));
+
+        // cross centre
+        Assert.True(Advent2025Day09.LinesIntersect(
+            new Point(5,0), new Point(5,10),
+            new Point(0,5), new Point(10,5)));
+
+        // parallel
+        Assert.False(Advent2025Day09.LinesIntersect(
+            new Point(0,0), new Point(10,0),
+            new Point(0,5), new Point(10,5)));
+
+        // collinear no overlap
+        Assert.False(Advent2025Day09.LinesIntersect(
+            new Point(0,0), new Point(10,0),
+            new Point(20,0), new Point(30,0)));
+
+        // collinear overlap
+        Assert.False(Advent2025Day09.LinesIntersect(
+            new Point(0,0), new Point(10,0),
+            new Point(5,0), new Point(15,0)));
+
+        // touch at point
+        Assert.False(Advent2025Day09.LinesIntersect(
+            new Point(0,0), new Point(10,10),
+            new Point(10,10), new Point(20,0)));
+
+        // vertical + horizontal
+        Assert.True(Advent2025Day09.LinesIntersect(
+            new Point(3,0), new Point(3,10),
+            new Point(0,5), new Point(10,5)));
+
+        // vertical no hit
+        Assert.False(Advent2025Day09.LinesIntersect(
+            new Point(3,0), new Point(3,10),
+            new Point(0,20), new Point(10,20)));
     }
 
     [Fact]
