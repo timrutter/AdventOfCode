@@ -45,9 +45,9 @@ public class Advent2025Day09 : Solution
 
         long tmax = 0;
         for (var i = 0; i < _coords.Count; i++)
-            for (var j = i + 1; j < _coords.Count; j++)
-                if (AllAreGreen(_coords[i], _coords[j], edges))
-                    tmax = Math.Max(tmax, GetArea(_coords[i], _coords[j]));
+        for (var j = i + 1; j < _coords.Count; j++)
+            if (AllAreGreen(_coords[i], _coords[j], edges))
+                tmax = Math.Max(tmax, GetArea(_coords[i], _coords[j]));
 
         return tmax;
     }
