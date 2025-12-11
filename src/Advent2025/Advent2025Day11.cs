@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using AdventOfCode.Helpers;
 
@@ -6,7 +8,7 @@ namespace AdventOfCode.Advent2025;
 
 public class Advent2025Day11 : Solution
 {
-    private readonly Dictionary<Device, (long countPaths, long countFft, long countDac, long countBoth)> _cache = new();
+    private readonly Dictionary<Device, Counts> _cache = new();
 
     public Advent2025Day11()
     {
@@ -44,85 +46,120 @@ public class Advent2025Day11 : Solution
 
         var start = devices.Find(d => d.Name == "you");
         var end = devices.Find(d => d.Name == "out");
-        return start!.Traverse().Count(d => d == end);
+        return start!.Traverse().Count(d => Equals(d, end));
     }
 
     public override object ExecutePart2()
     {
         var lines = DataFile.ReadAll<string>();
-        var devices = new List<Device>();
+        var devices = new Dictionary<string, Device>();
         foreach (var line in lines)
         {
             var bits = line.Split(": ");
 
-            var thisDevice = devices.Find(d => d.Name == bits[0]);
-            if (thisDevice is null)
-            {
-                thisDevice = new Device(bits[0]);
-                devices.Add(thisDevice);
-            }
+            var thisDevice = FindOrAdd(bits[0]);
 
             foreach (var child in bits[1].Split(' '))
-            {
-                var childDevice = devices.Find(d => d.Name == child);
-                if (childDevice is null)
-                {
-                    childDevice = new Device(child);
-                    devices.Add(childDevice);
-                }
-
-                thisDevice.AddChild(childDevice);
-            }
+                thisDevice.AddChild(FindOrAdd(child));
         }
 
-        var counts = CountPaths(devices.Find(d => d.Name == "svr"));
-        return counts.countBoth;
+        var counts = CountPaths(devices["svr"]);
+        return counts.CountBoth;
+
+        Device FindOrAdd(string name)
+        {
+            devices.TryGetValue(name, out var thisDevice);
+            if (thisDevice is not null) return thisDevice;
+            thisDevice = new Device(name);
+            devices.Add(thisDevice.Name, thisDevice);
+            return thisDevice;
+        }
     }
 
-    private (long countPaths, long countFft, long countDac, long countBoth) CountPaths(Device device)
+    struct Counts
+    {
+        public long CountPaths { get; set; } = 0;
+        public long CountFft{ get; set; } = 0;
+        public long CountDac{ get; set; } = 0; 
+        public long CountBoth{ get; set; } = 0;
+
+
+        public Counts(long countPaths, long countFft, long countDac, long countBoth)
+        {
+            CountPaths = countPaths;
+            CountFft = countFft;
+            CountDac = countDac;
+            CountBoth = countBoth;
+        }
+    }
+    private Counts CountPaths(Device device)
     {
         if (_cache.TryGetValue(device, out var result)) return result;
-        if (device.Name == "out") return (1, 0, 0, 0);
+        if (device.Name == "out") return new Counts(1, 0, 0, 0);
 
-        (long countPaths, long countFft, long countDac, long countBoth) counts = (0, 0, 0, 0);
+        Counts counts = new(0, 0, 0, 0);
         foreach (var deviceChild in device.Children)
         {
             var childcounts = CountPaths(deviceChild);
-            counts.countPaths += childcounts.countPaths;
-            if (childcounts.countBoth > 0)
+            counts.CountPaths += childcounts.CountPaths;
+            if (childcounts.CountBoth > 0)
             {
                 // once we have both don't care about finding ffts or dacs
-                counts.countBoth += childcounts.countBoth;
+                counts.CountBoth += childcounts.CountBoth;
                 continue;
             }
 
-            if (deviceChild.Name == "fft")
+            if (deviceChild.IsFft)
             {
-                counts.countFft += childcounts.countPaths;
-                counts.countBoth += childcounts.countDac;
+                counts.CountFft += childcounts.CountPaths;
+                counts.CountBoth += childcounts.CountDac;
             }
             else
             {
-                counts.countFft += childcounts.countFft;
+                counts.CountFft += childcounts.CountFft;
             }
 
-            if (deviceChild.Name == "dac")
+            if (deviceChild.IsDac)
             {
-                counts.countDac += childcounts.countPaths;
-                counts.countBoth += childcounts.countFft;
+                counts.CountDac += childcounts.CountPaths;
+                counts.CountBoth += childcounts.CountFft;
             }
             else
             {
-                counts.countDac += childcounts.countDac;
+                counts.CountDac += childcounts.CountDac;
             }
         }
 
-        _cache.Add(device, counts);
+        _cache[device] = counts;
         return counts;
     }
 
     private class Device(string name) : Graph<Device>
     {
+        private readonly int _hash = name.GetHashCode();
+
+        private bool Equals(Device other)
+        {
+            return _hash == other._hash;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is null) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((Device)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return _hash;
+        }
+
+        public bool IsDac { get; } = name == "dac";
+
+        public bool IsFft { get; } = name == "fft";
+
         public string Name { get; } = name;
 
         public override string ToString() => Name;
