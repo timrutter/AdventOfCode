@@ -199,13 +199,19 @@ public class Advent2025Tests
     [Fact]
     public void Day10Should()
     {
+        Assert.Empty(Advent2025Day10.Combine([1, 2, 3], [1, 2, 3]));
+        Assert.Equivalent(new List<int>{2}, Advent2025Day10.Combine([1, 3], [1, 2, 3]));
+        Assert.Equivalent(new List<int>{2,3}, Advent2025Day10.Combine([1, 3], [1, 2,]));
+        
     }
 
     [Fact]
     public void Day11Should()
     {
+        
     }
 
+   
     [Fact]
     public void Day12Should()
     {

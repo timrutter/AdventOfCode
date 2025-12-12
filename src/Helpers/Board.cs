@@ -202,7 +202,38 @@ public class Board<T> where T : struct
     public Point BottomLeft => new(0, Height - 1);
     public Point TopLeft => new(0, 0);
 
-
+    public override bool Equals(object obj)
+    {
+        if (obj is not Board<T> other) return false;
+        if (other.Width != Width || other.Height != Height) return false;
+        return ValuesAndPositions.All(valuesAndPosition => other.ValueAt(valuesAndPosition.pos).Equals(valuesAndPosition.value));
+    }
+    public IEnumerable<Board<T>> GetAllUniqueOrientations()
+    {
+        var ret = new List<Board<T>> { Clone() };
+        var current = ret[0].RotateAcw();
+        if (ret.All(b => !b.Equals(current)))
+            ret.Add(current);
+        current = current.RotateAcw();
+        if (ret.All(b => !b.Equals(current)))
+            ret.Add(current);
+        current = current.RotateAcw();
+        if (ret.All(b => !b.Equals(current)))
+            ret.Add(current);
+        current = current.FlipX();
+        if (ret.All(b => !b.Equals(current)))
+            ret.Add(current);
+        current = current.RotateAcw();
+        if (ret.All(b => !b.Equals(current)))
+            ret.Add(current);
+        current = current.RotateAcw();
+        if (ret.All(b => !b.Equals(current)))
+            ret.Add(current);
+        current = current.RotateAcw();
+        if (ret.All(b => !b.Equals(current)))
+            ret.Add(current);
+        return ret;
+    }
     public Board<T> RotateAcw()
     {
         var b = new Board<T>(Height, Width);
@@ -223,7 +254,20 @@ public class Board<T> where T : struct
 
         return b;
     }
+    public Board<T> Clone()
+    {
+        var b = new Board<T>(Width, Height);
 
+        for (var y = 0; y < Height; y++)
+        {
+            for (var x = 0; x < Width; x--)
+            {
+                b.SetValueAt(x, y, _board[x, y]);
+            }
+        }
+
+        return b;
+    }
     public Board<T> FlipX()
     {
         var b = new Board<T>(Width, Height);
@@ -351,7 +395,11 @@ public class Board<T> where T : struct
         foreach (var boardPosition in Positions)
             SetValueAt(boardPosition, initFunc(boardPosition, i++));
     }
-
+    public void Clear( T value)
+    {
+        foreach (var point in Positions)
+            SetValueAt(point, value);
+    }
     public Board(Board<T> from)
     {
         _board = new T[from.Width, from.Height];
