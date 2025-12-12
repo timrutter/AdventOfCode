@@ -288,7 +288,7 @@ public static class StringOperations
         return strs.Where(s => !string.IsNullOrWhiteSpace(s));
     }
 
-    public static IEnumerable<T> SplitToType<T>(this string str, string separator = "x",
+    public static IEnumerable<T> SplitToType<T>(this string str, string separator ,
         StringSplitOptions options = StringSplitOptions.None)
     {
         var bits = str.Split(separator, options);

@@ -24,7 +24,7 @@ public class Advent2025Day12 : Solution
         foreach (var region in lines.Skip(30))
         {
             var bits = region.Split(": ").ToList();
-            var xy = bits[0].SplitToType<int>().ToList();
+            var xy = bits[0].SplitToType<int>("x").ToList();
             var presentsToFit = bits[1].SplitToType<int>(" ").ToList();
             var totalPresentArea = presentsToFit.Select((p, i) => p * (9 - losses[i])).Sum();
             var area = xy[0] * xy[1];

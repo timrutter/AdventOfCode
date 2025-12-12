@@ -18,7 +18,7 @@ public class Advent2015Day02 : Solution
         var count = 0;
         foreach (var t in data)
         {
-            var bits = t.SplitToType<int>().ToList();
+            var bits = t.SplitToType<int>("x").ToList();
             var x = bits[0];
             var y = bits[1];
             var z = bits[2];
@@ -37,7 +37,7 @@ public class Advent2015Day02 : Solution
         var count = 0;
         foreach (var t in data)
         {
-            var bits = t.SplitToType<int>().ToList();
+            var bits = t.SplitToType<int>("x").ToList();
             var x = bits[0];
             var y = bits[1];
             var z = bits[2];
