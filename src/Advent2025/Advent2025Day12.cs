@@ -10,7 +10,7 @@ public class Advent2025Day12 : Solution
     public Advent2025Day12()
     {
         Answer1 = 555;
-        Answer2 = null;
+        Answer2 = 0;
     }
 
     public override object ExecutePart1()
@@ -31,7 +31,7 @@ public class Advent2025Day12 : Solution
             // but whenever its not big enough the area - totalPresentArea < -400 and whenever its big enough its > 150
             // i.e its never very close to fitting, only easily big enough or nowhere near big enough (carefully engineering to be the case?)
             // so can only conclude that the loses are the biggest significant statistical factor therefore
-            // don't need to consider the arrangements at all.
+            // don't need to consider the arrangements at all, other than each set of presents being in a big block of the same
             if (totalPresentArea > area) continue;
 
             //Console.WriteLine(
@@ -44,6 +44,6 @@ public class Advent2025Day12 : Solution
 
     public override object ExecutePart2()
     {
-        return int.MaxValue;
+        return 0;
     }
 }
