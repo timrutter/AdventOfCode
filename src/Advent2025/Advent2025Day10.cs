@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using AdventOfCode.Helpers;
 
@@ -7,7 +8,7 @@ namespace AdventOfCode.Advent2025;
 
 public class Advent2025Day10 : Solution
 {
-    private static readonly Dictionary<int, List<ListOfInts>> Cache = new();
+    private static readonly Dictionary<int, List<List<int>> Cache = new();
 
     public Advent2025Day10()
     {
@@ -87,14 +88,14 @@ public class Advent2025Day10 : Solution
         {
             var bits = line.Split(" ");
             var joltages =
-                new ListOfInts(bits.Last()[1..^1].SplitToType<int>(",").ToList());
+                new List<int>(bits.Last()[1..^1].SplitToType<int>(",").ToList());
             var bs = bits.Skip(1).Take(bits.Length - 2).ToList();
             var buttons = bs.Select(b => b[1..^1].SplitToType<int>(","))
-                .Select(b => Enumerable.Range(0, joltages.Values.Count)
+                .Select(b => Enumerable.Range(0, joltages.Count)
                     .Select(i => b.Contains(i) ? 1 : 0).ToList()).ToList();
             //Console.WriteLine(string.Join(",", joltages));
             //Console.WriteLine(string.Join(" | ",  buttons.Select(b => string.Join(",", b))));
-            var answer = SolveSingle(buttons.Select(b => new ListOfInts(b)).ToList(), joltages);
+            var answer = SolveSingle(buttons.Select(b => new List<int>(b)).ToList(), joltages);
             //Console.WriteLine(answer);
             count += answer;
         }
@@ -102,58 +103,55 @@ public class Advent2025Day10 : Solution
         return count;
     }
 
-    private static Dictionary<ListOfInts, int> Patterns(List<ListOfInts> coeffs)
+    private static Dictionary<ImmutableArray<int>, int> Patterns(List<List<int>> coeffs)
     {
-        var output = new Dictionary<ListOfInts, int>();
+        var output = new Dictionary<ImmutableArray<int>, int>();
 
         var numButtons = coeffs.Count;
-        var numVars = coeffs[0].Values.Count;
+        var numVars = coeffs[0].Count;
 
         for (var patternLen = 0; patternLen <= numButtons; patternLen++)
             foreach (var buttons in Combinations(numButtons, patternLen))
             {
-                var pattern = new ListOfInts(Enumerable.Repeat(0, numVars).ToList());
-                foreach (var b in buttons.Values)
-                    for (var i = 0; i < coeffs[b].Values.Count; i++)
-                        pattern.Values[i] += coeffs[b].Values[i];
+                var pattern = Enumerable.Repeat(0, numVars).ToList();
+                foreach (var b in buttons)
+                    for (var i = 0; i < coeffs[b].Count; i++)
+                        pattern[i] += coeffs[b][i];
 
-                output.TryAdd(pattern, patternLen);
+                output.TryAdd([..pattern], patternLen);
             }
 
         return output;
     }
 
-    public static int SolveSingle(List<ListOfInts> coeffs, ListOfInts goal)
+    private static int SolveSingle(List<List<int>> coeffs, List<int> goal)
     {
         var patternCosts = Patterns(coeffs);
-        var cache = new Dictionary<ListOfInts, int>();
+        var cache = new Dictionary<ImmutableArray<int>, int>();
 
-        int SolveSingleAux(ListOfInts g)
+        int SolveSingleAux(List<int> g)
         {
-            if (g.Values.All(x => x == 0)) return 0;
+            if (g.All(x => x == 0)) return 0;
 
-            if (cache.TryGetValue(g, out var cached))
+            if (cache.TryGetValue([..g], out var cached))
                 return cached;
 
             var answer = 1_000_000;
 
-            foreach (var kv in patternCosts)
+            foreach (var (pattern, cost) in patternCosts)
             {
-                var pattern = kv.Key;
-                var cost = kv.Value;
-
-                var ok = !g.Values.Where((t, i) => pattern.Values[i] > t || (pattern.Values[i] & 1) != (t & 1)).Any();
+                var ok = !g.Where((t, i) => pattern[i] > t || (pattern[i] & 1) != (t & 1)).Any();
 
                 if (!ok) continue;
 
-                var newGoal = new ListOfInts(Enumerable.Repeat(0, g.Values.Count).ToList());
-                for (var i = 0; i < g.Values.Count; i++)
-                    newGoal.Values[i] = (g.Values[i] - pattern.Values[i]) / 2;
+                var newGoal = Enumerable.Repeat(0, g.Count).ToList();
+                for (var i = 0; i < g.Count; i++)
+                    newGoal[i] = (g[i] - pattern[i]) / 2;
 
                 answer = Math.Min(answer, cost + 2 * SolveSingleAux(newGoal));
             }
 
-            cache[g] = answer;
+            cache[[..g]] = answer;
             return answer;
         }
 
@@ -161,21 +159,21 @@ public class Advent2025Day10 : Solution
     }
 
 
-    private static IEnumerable<ListOfInts> Combinations(int numButtons, int patternLen)
+    private static IEnumerable<List<int>> Combinations(int numButtons, int patternLen)
     {
-        var result = new ListOfInts(Enumerable.Repeat(0, patternLen).ToList());
+        var result = Enumerable.Repeat(0, patternLen).ToList();
 
-        IEnumerable<ListOfInts> Recurse(int start, int depth)
+        IEnumerable<List<int>> Recurse(int start, int depth)
         {
             if (depth == patternLen)
             {
-                yield return result.Clone();
+                yield return result.ToList();
                 yield break;
             }
 
             for (var i = start; i < numButtons; i++)
             {
-                result.Values[depth] = i;
+                result[depth] = i;
                 foreach (var r in Recurse(i + 1, depth + 1))
                     yield return r;
             }
@@ -184,39 +182,4 @@ public class Advent2025Day10 : Solution
         return Recurse(0, 0);
     }
 
-    public class ListOfInts(List<int> values)
-    {
-        public List<int> Values { get; } = values;
-
-        protected bool Equals(ListOfInts other)
-        {
-            return Values.SequenceEqual(other.Values);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is null) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((ListOfInts)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            var hash = 17;
-            foreach (var v in Values) hash = hash * 23 + v.GetHashCode();
-
-            return hash;
-        }
-
-        public ListOfInts Clone()
-        {
-            return new ListOfInts(Values.ToList());
-        }
-
-        public override string ToString()
-        {
-            return string.Join(",", Values);
-        }
-    }
 }
