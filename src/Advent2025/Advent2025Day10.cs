@@ -76,6 +76,7 @@ public class Advent2025Day10 : Solution
         ret.Sort();
         return ret;
     }
+
     // Credit to here for this: https://old.reddit.com/r/adventofcode/comments/1pk87hl/2025_day_10_part_2_bifurcate_your_way_to_victory/
     // https://old.reddit.com/user/tenthmascot
     public override object ExecutePart2()
@@ -90,10 +91,10 @@ public class Advent2025Day10 : Solution
             var bs = bits.Skip(1).Take(bits.Length - 2).ToList();
             var buttons = bs.Select(b => b[1..^1].SplitToType<int>(","))
                 .Select(b => Enumerable.Range(0, joltages.Values.Count)
-                    .Select(i =>b.Contains(i) ? 1 : 0).ToList()).ToList();
+                    .Select(i => b.Contains(i) ? 1 : 0).ToList()).ToList();
             //Console.WriteLine(string.Join(",", joltages));
             //Console.WriteLine(string.Join(" | ",  buttons.Select(b => string.Join(",", b))));
-            var answer = Solver.SolveSingle(buttons.Select(b => new ListOfInts(b)).ToList(), joltages);
+            var answer = SolveSingle(buttons.Select(b => new ListOfInts(b)).ToList(), joltages);
             //Console.WriteLine(answer);
             count += answer;
         }
@@ -101,6 +102,87 @@ public class Advent2025Day10 : Solution
         return count;
     }
 
+    private static Dictionary<ListOfInts, int> Patterns(List<ListOfInts> coeffs)
+    {
+        var output = new Dictionary<ListOfInts, int>();
+
+        var numButtons = coeffs.Count;
+        var numVars = coeffs[0].Values.Count;
+
+        for (var patternLen = 0; patternLen <= numButtons; patternLen++)
+            foreach (var buttons in Combinations(numButtons, patternLen))
+            {
+                var pattern = new ListOfInts(Enumerable.Repeat(0, numVars).ToList());
+                foreach (var b in buttons.Values)
+                    for (var i = 0; i < coeffs[b].Values.Count; i++)
+                        pattern.Values[i] += coeffs[b].Values[i];
+
+                output.TryAdd(pattern, patternLen);
+            }
+
+        return output;
+    }
+
+    public static int SolveSingle(List<ListOfInts> coeffs, ListOfInts goal)
+    {
+        var patternCosts = Patterns(coeffs);
+        var cache = new Dictionary<ListOfInts, int>();
+
+        int SolveSingleAux(ListOfInts g)
+        {
+            if (g.Values.All(x => x == 0)) return 0;
+
+            if (cache.TryGetValue(g, out var cached))
+                return cached;
+
+            var answer = 1_000_000;
+
+            foreach (var kv in patternCosts)
+            {
+                var pattern = kv.Key;
+                var cost = kv.Value;
+
+                var ok = !g.Values.Where((t, i) => pattern.Values[i] > t || (pattern.Values[i] & 1) != (t & 1)).Any();
+
+                if (!ok) continue;
+
+                var newGoal = new ListOfInts(Enumerable.Repeat(0, g.Values.Count).ToList());
+                for (var i = 0; i < g.Values.Count; i++)
+                    newGoal.Values[i] = (g.Values[i] - pattern.Values[i]) / 2;
+
+                answer = Math.Min(answer, cost + 2 * SolveSingleAux(newGoal));
+            }
+
+            cache[g] = answer;
+            return answer;
+        }
+
+        return SolveSingleAux(goal);
+    }
+
+
+    private static IEnumerable<ListOfInts> Combinations(int numButtons, int patternLen)
+    {
+        var result = new ListOfInts(Enumerable.Repeat(0, patternLen).ToList());
+
+        IEnumerable<ListOfInts> Recurse(int start, int depth)
+        {
+            if (depth == patternLen)
+            {
+                yield return result.Clone();
+                yield break;
+            }
+
+            for (var i = start; i < numButtons; i++)
+            {
+                result.Values[depth] = i;
+                foreach (var r in Recurse(i + 1, depth + 1))
+                    yield return r;
+            }
+        }
+
+        return Recurse(0, 0);
+    }
 
     public class ListOfInts(List<int> values)
     {
@@ -130,102 +212,11 @@ public class Advent2025Day10 : Solution
         public ListOfInts Clone()
         {
             return new ListOfInts(Values.ToList());
-
         }
 
         public override string ToString()
         {
             return string.Join(",", Values);
-        }
-    }
-
-
-    public static class Solver
-    {
-        private static Dictionary<ListOfInts, int> Patterns(List<ListOfInts> coeffs)
-        {
-            var output = new Dictionary<ListOfInts, int>();
-
-            var numButtons = coeffs.Count;
-            var numVars = coeffs[0].Values.Count;
-
-            for (var patternLen = 0; patternLen <= numButtons; patternLen++)
-            {
-                foreach (var buttons in Combinations(numButtons, patternLen))
-                {
-                    var pattern = new ListOfInts(Enumerable.Repeat(0,numVars).ToList());
-                    foreach (var b in buttons.Values)
-                    {
-                        for (var i = 0; i < coeffs[b].Values.Count; i++)
-                            pattern.Values[i] += coeffs[b].Values[i];
-                    }
-
-                    output.TryAdd(pattern, patternLen);
-                }
-            }
-
-            return output;
-        }
-
-        public static int SolveSingle(List<ListOfInts> coeffs, ListOfInts goal)
-        {
-            var patternCosts = Patterns(coeffs);
-            var cache = new Dictionary<ListOfInts, int>();
-
-            int SolveSingleAux(ListOfInts g)
-            {
-                if (g.Values.All(x => x == 0)) return 0;
-
-                if (cache.TryGetValue(g, out var cached))
-                    return cached;
-
-                var answer = 1_000_000;
-
-                foreach (var kv in patternCosts)
-                {
-                    var pattern = kv.Key;
-                    var cost = kv.Value;
-
-                    var ok = !g.Values.Where((t, i) => pattern.Values[i] > t || (pattern.Values[i] & 1) != (t & 1)).Any();
-
-                    if (!ok) continue;
-
-                    var newGoal = new ListOfInts( Enumerable.Repeat(0,g.Values.Count).ToList());
-                    for (var i = 0; i < g.Values.Count; i++)
-                        newGoal.Values[i] = (g.Values[i] - pattern.Values[i]) / 2;
-
-                    answer = Math.Min(answer, cost + 2 * SolveSingleAux(newGoal));
-                }
-
-                cache[g] = answer;
-                return answer;
-            }
-
-            return SolveSingleAux(goal);
-        }
-
-
-        static IEnumerable<ListOfInts> Combinations(int numButtons, int patternLen)
-        {
-            var result = new ListOfInts(Enumerable.Repeat(0,patternLen).ToList());
-
-            IEnumerable<ListOfInts> Recurse(int start, int depth)
-            {
-                if (depth == patternLen)
-                {
-                    yield return result.Clone();
-                    yield break;
-                }
-
-                for (var i = start; i < numButtons; i++)
-                {
-                    result.Values[depth] = i;
-                    foreach (var r in Recurse(i + 1, depth + 1))
-                        yield return r;
-                }
-            }
-
-            return Recurse(0, 0);
         }
     }
 }
