@@ -31,7 +31,6 @@ public class Advent2025Day03 : Solution
         Parallel.ForEach(arr, line =>
         {
             var max = GetMax(line, 12);
-            Console.WriteLine(max);
             Interlocked.Add(ref sum, max);
         });
         return sum;
