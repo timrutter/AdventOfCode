@@ -76,7 +76,8 @@ public class Advent2025Day10 : Solution
         ret.Sort();
         return ret;
     }
-
+    // Credit to here for this: https://old.reddit.com/r/adventofcode/comments/1pk87hl/2025_day_10_part_2_bifurcate_your_way_to_victory/
+    // https://old.reddit.com/user/tenthmascot
     public override object ExecutePart2()
     {
         var lines = DataFile.ReadAll<string>().ToList();
