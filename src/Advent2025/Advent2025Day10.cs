@@ -182,6 +182,9 @@ public class Advent2025Day10 : Solution
         }
     }
 
+    /// <summary>
+    /// Immutable array is much slower...
+    /// </summary>
     public class ListOfInts
     {
         private readonly int _hash;
@@ -204,18 +207,12 @@ public class Advent2025Day10 : Solution
         {
             if (obj is null) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((ListOfInts)obj);
+            return obj.GetType() == GetType() && Equals((ListOfInts)obj);
         }
 
         public override int GetHashCode()
         {
             return _hash;
-        }
-
-        public ListOfInts Clone()
-        {
-            return new ListOfInts(Values.ToList());
         }
 
         public override string ToString()
