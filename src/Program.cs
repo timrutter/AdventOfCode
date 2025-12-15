@@ -20,7 +20,7 @@ internal static class Program
             //Execute(new Advent2019.Advent2019(), GetDays(DayMode.All));
             //Execute(new Advent2020.Advent2020(), GetDays(DayMode.All));
 
-            Execute(new Advent2025.Advent2025(), GetDays(DayMode.All));
+            Execute(new Advent2025.Advent2025(), GetDays(DayMode.Day,[10]));
 
             cons = Console.ReadLine();
         }

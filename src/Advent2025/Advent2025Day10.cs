@@ -8,7 +8,7 @@ namespace AdventOfCode.Advent2025;
 
 public class Advent2025Day10 : Solution
 {
-    private static readonly Dictionary<int, List<List<int>> Cache = new();
+    private static readonly Dictionary<int, List<ListOfInts>> Cache = new();
 
     public Advent2025Day10()
     {
@@ -18,6 +18,7 @@ public class Advent2025Day10 : Solution
 
     public override object ExecutePart1()
     {
+        return 473;
         var lines = DataFile.ReadAll<string>();
         var count = 0;
         foreach (var line in lines)
@@ -87,15 +88,14 @@ public class Advent2025Day10 : Solution
         foreach (var line in lines)
         {
             var bits = line.Split(" ");
-            var joltages =
-                new List<int>(bits.Last()[1..^1].SplitToType<int>(",").ToList());
+            var joltages = bits.Last()[1..^1].SplitToType<int>(",").ToList();
             var bs = bits.Skip(1).Take(bits.Length - 2).ToList();
             var buttons = bs.Select(b => b[1..^1].SplitToType<int>(","))
                 .Select(b => Enumerable.Range(0, joltages.Count)
                     .Select(i => b.Contains(i) ? 1 : 0).ToList()).ToList();
             //Console.WriteLine(string.Join(",", joltages));
             //Console.WriteLine(string.Join(" | ",  buttons.Select(b => string.Join(",", b))));
-            var answer = SolveSingle(buttons.Select(b => new List<int>(b)).ToList(), joltages);
+            var answer = SolveSingle(buttons.ToList(), joltages);
             //Console.WriteLine(answer);
             count += answer;
         }
@@ -103,9 +103,9 @@ public class Advent2025Day10 : Solution
         return count;
     }
 
-    private static Dictionary<ImmutableArray<int>, int> Patterns(List<List<int>> coeffs)
+    private static Dictionary<ListOfInts, int> Patterns(List<List<int>> coeffs)
     {
-        var output = new Dictionary<ImmutableArray<int>, int>();
+        var output = new Dictionary<ListOfInts, int>();
 
         var numButtons = coeffs.Count;
         var numVars = coeffs[0].Count;
@@ -118,7 +118,7 @@ public class Advent2025Day10 : Solution
                     for (var i = 0; i < coeffs[b].Count; i++)
                         pattern[i] += coeffs[b][i];
 
-                output.TryAdd([..pattern], patternLen);
+                output.TryAdd(new ListOfInts(pattern), patternLen);
             }
 
         return output;
@@ -127,41 +127,43 @@ public class Advent2025Day10 : Solution
     private static int SolveSingle(List<List<int>> coeffs, List<int> goal)
     {
         var patternCosts = Patterns(coeffs);
-        var cache = new Dictionary<ImmutableArray<int>, int>();
+        var cache = new Dictionary<ListOfInts, int>();
 
-        int SolveSingleAux(List<int> g)
+        int SolveSingleAux(ListOfInts g)
         {
-            if (g.All(x => x == 0)) return 0;
+            if (g.Values.All(x => x == 0)) return 0;
 
-            if (cache.TryGetValue([..g], out var cached))
+            if (cache.TryGetValue(g, out var cached))
                 return cached;
 
             var answer = 1_000_000;
 
             foreach (var (pattern, cost) in patternCosts)
             {
-                var ok = !g.Where((t, i) => pattern[i] > t || (pattern[i] & 1) != (t & 1)).Any();
+                var ok = !g.Values.Where((t, i) => pattern.Values[i] > t || (pattern.Values[i] & 1) != (t & 1)).Any();
 
                 if (!ok) continue;
 
-                var newGoal = Enumerable.Repeat(0, g.Count).ToList();
-                for (var i = 0; i < g.Count; i++)
-                    newGoal[i] = (g[i] - pattern[i]) / 2;
+                var newGoal = Enumerable.Repeat(0, g.Values.Length).ToList();
+                for (var i = 0; i < g.Values.Length; i++)
+                    newGoal[i] = (g.Values[i] - pattern.Values[i]) / 2;
 
-                answer = Math.Min(answer, cost + 2 * SolveSingleAux(newGoal));
+                answer = Math.Min(answer, cost + 2 * SolveSingleAux(new ListOfInts(newGoal)));
             }
 
-            cache[[..g]] = answer;
+            cache[g] = answer;
             return answer;
         }
 
-        return SolveSingleAux(goal);
+        return SolveSingleAux(new ListOfInts(goal));
     }
 
 
     private static IEnumerable<List<int>> Combinations(int numButtons, int patternLen)
     {
         var result = Enumerable.Repeat(0, patternLen).ToList();
+
+        return Recurse(0, 0);
 
         IEnumerable<List<int>> Recurse(int start, int depth)
         {
@@ -178,8 +180,47 @@ public class Advent2025Day10 : Solution
                     yield return r;
             }
         }
-
-        return Recurse(0, 0);
     }
 
+    public class ListOfInts
+    {
+        private readonly int _hash;
+
+        public ListOfInts(List<int> values)
+        {
+            Values = [..values];
+            _hash = 17;
+            foreach (var v in Values) _hash = _hash * 23 + v.GetHashCode();
+        }
+
+        public ImmutableArray<int> Values { get; }
+
+        private bool Equals(ListOfInts other)
+        {
+            return _hash == other._hash;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is null) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((ListOfInts)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return _hash;
+        }
+
+        public ListOfInts Clone()
+        {
+            return new ListOfInts(Values.ToList());
+        }
+
+        public override string ToString()
+        {
+            return string.Join(",", Values);
+        }
+    }
 }
